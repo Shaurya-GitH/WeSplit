@@ -39,7 +39,7 @@ public class GlobalExceptionHandler {
                 .exception(e.getMessage())
                 .exceptionType("TransactionFailedException")
                 .build();
-        return  ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(message);
+        return  ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(message);
     }
 
     @ExceptionHandler(InvalidInputException.class)

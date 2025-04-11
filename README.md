@@ -32,3 +32,11 @@ Swagger integrated for easy visualization and testing of endpoints.
 💸 Group Settlement Logic
 
 🧪 Test Coverage using JUnit & Mockito
+
+📦 Tech Stack
+Backend: Java, Spring Boot, Spring Security, Spring Data JPA, MySQL
+
+Tools: Swagger, Postman, IntelliJ IDEA, Maven
+
+Version Control: Git, GitHub
+

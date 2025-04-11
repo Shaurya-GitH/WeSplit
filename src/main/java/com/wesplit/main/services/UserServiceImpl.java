@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
         this.balanceService=balanceService;
         this.passwordEncoder=passwordEncoder;
     }
-    @Transactional
+
     @Override
     public UserDTO registerUser(UserDTO userDTO) {
         User user=this.userDtoToUser(userDTO);
@@ -48,8 +48,12 @@ public class UserServiceImpl implements UserService {
             String hashPw= passwordEncoder.encode(user.getPassword());
             user.setPassword(hashPw);
             user.setRegisterStatus(true);
-                User newUser= userRepository.save(user);
-                return this.userToUserDto(newUser);
+            //setting role as USER
+            List<String> list=new ArrayList<>();
+            list.add("USER");
+            user.setRoles(list);
+            User newUser= userRepository.save(user);
+            return this.userToUserDto(newUser);
         }
         //if user is already in the record
         catch (DataIntegrityViolationException e){
@@ -64,6 +68,10 @@ public class UserServiceImpl implements UserService {
                         .user(friendUser)
                         .friends(new ArrayList<>())
                         .build();
+                //setting role as USER
+                List<String> list=new ArrayList<>();
+                list.add("USER");
+                friendUser.setRoles(list);
                 String hashPw= passwordEncoder.encode(user.getPassword());
                 friendUser.setFriendList(friendList);
                 friendUser.setRegisterStatus(true);
