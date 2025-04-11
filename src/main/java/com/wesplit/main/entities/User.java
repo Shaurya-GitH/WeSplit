@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Table
 @Data
@@ -22,6 +24,8 @@ public class User {
     private String email;
     private String password;
     private boolean registerStatus;
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> roles;
 
     @OneToOne(mappedBy = "user",orphanRemoval = true,cascade = CascadeType.ALL)
     private FriendList friendList;
