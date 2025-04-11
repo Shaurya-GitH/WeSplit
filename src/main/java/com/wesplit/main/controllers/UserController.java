@@ -18,8 +18,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/user")
 public class UserController {
-    private UserService userService;
-    private FriendListService friendListService;
+    private final UserService userService;
+    private final FriendListService friendListService;
     UserController(UserService userService, FriendListService friendListService){
         this.userService=userService;
         this.friendListService=friendListService;
@@ -46,5 +46,11 @@ public class UserController {
        Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
       List<FriendDTO> friends= friendListService.getAllFriends(authentication.getName());
         return ResponseEntity.ok().body(friends);
+    }
+
+    //API authCheck
+    @GetMapping("/auth/check")
+    ResponseEntity<?> checkLogin(){
+        return ResponseEntity.ok().build();
     }
 }

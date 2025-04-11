@@ -19,7 +19,7 @@ import java.util.List;
 @RequestMapping("/expense")
 public class ExpenseController {
     private final ExpenseSplitService expenseSplitService;
-    private ExpenseService expenseService;
+    private final ExpenseService expenseService;
     @Autowired
     ExpenseController(ExpenseService expenseService, ExpenseSplitService expenseSplitService){
         this.expenseService=expenseService;
