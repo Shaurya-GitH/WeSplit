@@ -51,20 +51,61 @@ public class BalanceServiceImpl implements BalanceService {
         Balance balance= balanceRepository.findByUser1AndUser2(user1, user2).orElseGet(()->balanceRepository.findByUser1AndUser2(user2, user1).get());
         //syncing users with the record
           if(balance.getUser1().getUserId().equals(user1.getUserId())){
-              //logic to see which user owes which who
+              //logic to see which user owes whom
               if(owed.compareTo(BigDecimal.ZERO)>0){
-                  balance.setOneOweTwo(balance.getOneOweTwo().add(owed));
+                  BigDecimal sum= balance.getOneOweTwo().add(owed);
+                  BigDecimal temp=sum.subtract(balance.getTwoOweOne());
+                  if(temp.compareTo(BigDecimal.ZERO)>0){
+                      balance.setTwoOweOne(BigDecimal.ZERO);
+                      balance.setOneOweTwo(temp);
+                  }
+                  else{
+                      balance.setTwoOweOne(temp.negate());
+                      balance.setOneOweTwo(BigDecimal.ZERO);
+                  }
+
               }
               else{
-                  balance.setTwoOweOne(balance.getTwoOweOne().add(owed.negate()));
+                  BigDecimal sum= balance.getTwoOweOne().add(owed.negate());
+                  //logic to ensure one attribute is zero
+                  BigDecimal temp= balance.getOneOweTwo().subtract(sum);
+                  if(temp.compareTo(BigDecimal.ZERO)>0){
+                      balance.setTwoOweOne(BigDecimal.ZERO);
+                      balance.setOneOweTwo(temp);
+                  }
+                  else{
+                      balance.setTwoOweOne(temp.negate());
+                      balance.setOneOweTwo(BigDecimal.ZERO);
+                  }
               }
           }
           else{
               if(owed.compareTo(BigDecimal.ZERO)>0){
-                  balance.setTwoOweOne(balance.getTwoOweOne().add(owed));
+                  BigDecimal sum= balance.getTwoOweOne().add(owed);
+                  //logic to ensure one attribute is zero
+                  BigDecimal temp= balance.getOneOweTwo().subtract(sum);
+                  if(temp.compareTo(BigDecimal.ZERO)>0){
+                      balance.setTwoOweOne(BigDecimal.ZERO);
+                      balance.setOneOweTwo(temp);
+                  }
+                  else{
+                      balance.setTwoOweOne(temp.negate());
+                      balance.setOneOweTwo(BigDecimal.ZERO);
+                  }
+
               }
               else{
-                  balance.setOneOweTwo(balance.getOneOweTwo().add(owed.negate()));
+                  BigDecimal sum= balance.getOneOweTwo().add(owed.negate());
+                  //logic to ensure one attribute is zero
+                  BigDecimal temp= sum.subtract(balance.getTwoOweOne());
+                  if(temp.compareTo(BigDecimal.ZERO)>0){
+                      balance.setTwoOweOne(BigDecimal.ZERO);
+                      balance.setOneOweTwo(temp);
+                  }
+                  else{
+                      balance.setTwoOweOne(temp.negate());
+                      balance.setOneOweTwo(BigDecimal.ZERO);
+                  }
               }
           }
           try{
