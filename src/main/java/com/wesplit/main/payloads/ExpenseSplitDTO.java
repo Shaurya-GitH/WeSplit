@@ -1,14 +1,17 @@
 package com.wesplit.main.payloads;
 
-import com.wesplit.main.entities.Expense;
-import com.wesplit.main.entities.User;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ExpenseSplitDTO {
     private Long expenseSplitId;
     private BigDecimal owed;
     private BigDecimal paid;
-    private User user;
-    private Expense expense;
+    private FriendDTO user;
 }
