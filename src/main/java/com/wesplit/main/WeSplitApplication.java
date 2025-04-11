@@ -24,7 +24,7 @@ public class WeSplitApplication {
     OpenAPI configSwagger(){
         return new OpenAPI().info(
                 new Info()
-                        .title("Splitwise APIs")
+                        .title("WeSplit APIs")
                         .description("by shaurya")
         );
     }
