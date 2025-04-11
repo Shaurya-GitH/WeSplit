@@ -7,8 +7,10 @@ import com.wesplit.main.exceptions.InvalidInputException;
 import com.wesplit.main.exceptions.TransactionFailedException;
 import com.wesplit.main.payloads.ExpenseDTO;
 import com.wesplit.main.payloads.ExpenseResponseDTO;
+import com.wesplit.main.payloads.ExpenseSplitDTO;
 import com.wesplit.main.payloads.ExpenseType;
 import com.wesplit.main.repositories.ExpenseRepository;
+import com.wesplit.main.repositories.ExpenseSplitRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,13 +27,15 @@ public class ExpenseServiceImpl implements ExpenseService{
     final private ModelMapper modelMapper;
     private final BalanceService balanceService;
     private final UserService userService;
+    private final ExpenseSplitService expenseSplitService;
 
     @Autowired
-    ExpenseServiceImpl(ExpenseRepository expenseRepository, ModelMapper modelMapper, ExpenseSplitService expenseSplitService, BalanceService balanceService, UserService userService){
+    ExpenseServiceImpl(ExpenseRepository expenseRepository, ModelMapper modelMapper, BalanceService balanceService, UserService userService, ExpenseSplitService expenseSplitService){
         this.expenseRepository=expenseRepository;
         this.modelMapper=modelMapper;
         this.balanceService = balanceService;
         this.userService = userService;
+        this.expenseSplitService = expenseSplitService;
     }
     @Transactional
     @Override
@@ -170,5 +174,11 @@ public class ExpenseServiceImpl implements ExpenseService{
         return modelMapper.map(expenseDTO,Expense.class);
     }
 
-
+    @Override
+    public List<ExpenseResponseDTO> getExpenses(String email1, String email2) {
+        User user1= userService.getUser(email1);
+        User user2= userService.getUser(email2);
+        List<Expense> list= expenseSplitService.getExpenses(user1,user2);
+        return list.stream().map((expense -> this.expenseToExpenseResponseDTO(expense))).toList();
+    }
 }

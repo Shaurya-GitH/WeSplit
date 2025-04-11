@@ -16,17 +16,12 @@ import java.util.List;
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
     UserRepository userRepository;
-    @Autowired
-    PasswordEncoder passwordEncoder;
     UserDetailsServiceImpl(UserRepository userRepository) {
         this.userRepository=userRepository;
     }
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-           com.wesplit.main.entities.User user =userRepository.findByEmailAndRegisterStatusTrue(username).orElseThrow(()->new ResourceNotFoundException("Email",username+""));
-        System.out.println(passwordEncoder.matches("vivek123", user.getPassword()));
-
-
+        com.wesplit.main.entities.User user =userRepository.findByEmailAndRegisterStatusTrue(username).orElseThrow(()->new ResourceNotFoundException("Email",username+""));
         String email=user.getEmail();
            String password=user.getPassword();
            List<String> rolesList=user.getRoles();
