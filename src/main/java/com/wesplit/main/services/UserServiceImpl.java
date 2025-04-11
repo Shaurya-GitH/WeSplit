@@ -37,8 +37,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO registerUser(UserDTO userDTO) {
-        User user=this.userDtoToUser(userDTO);
+
         try{
+            User user=this.userDtoToUser(userDTO);
             //creating a friend-list for the new user
             FriendList friendList=FriendList.builder()
                                  .user(user)
@@ -57,6 +58,7 @@ public class UserServiceImpl implements UserService {
         }
         //if user is already in the record
         catch (DataIntegrityViolationException e){
+            User user=this.userDtoToUser(userDTO);
             User friendUser= userRepository.findByEmail(user.getEmail()).get();
             if(friendUser.isRegisterStatus()){
                 //if user is already registered
@@ -73,11 +75,11 @@ public class UserServiceImpl implements UserService {
                 list.add("USER");
                 friendUser.setRoles(list);
                 String hashPw= passwordEncoder.encode(user.getPassword());
+                friendUser.setPassword(hashPw);
                 friendUser.setFriendList(friendList);
                 friendUser.setRegisterStatus(true);
                 friendUser.setFirstName(user.getFirstName());
                 friendUser.setLastName(user.getLastName());
-                friendUser.setPassword(hashPw);
                 try{
                     User newUser= userRepository.save(friendUser);
                     return this.userToUserDto(newUser);
