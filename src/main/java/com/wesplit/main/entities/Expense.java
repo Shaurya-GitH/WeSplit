@@ -25,6 +25,7 @@ public class Expense {
     private BigDecimal amount;
     private LocalDate createdAt;
     private ExpenseType expenseType;
+    private Boolean settled;
 
     @OneToMany(mappedBy = "expense", cascade = CascadeType.ALL)
     private List<ExpenseSplit> splitList;

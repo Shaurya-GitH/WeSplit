@@ -33,12 +33,20 @@ public class ExpenseController {
         return ResponseEntity.status(HttpStatus.CREATED).body(newExpense);
     }
 
-    //API getExpenses
-    @GetMapping("/{userEmail2}")
-    ResponseEntity<List<ExpenseResponseDTO>> getExpenses(@PathVariable String userEmail2){
+    //API getUnsettledExpenses
+    @GetMapping("/unsettled/{userEmail2}")
+    ResponseEntity<List<ExpenseResponseDTO>> getUnsettledExpenses(@PathVariable String userEmail2){
        Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
-       List<ExpenseResponseDTO> list= expenseService.getExpenses(authentication.getName(),userEmail2);
+       List<ExpenseResponseDTO> list= expenseService.getUnsettledExpenses(authentication.getName(),userEmail2);
        return ResponseEntity.ok().body(list);
+    }
+
+    //API getSettledExpenses
+    @GetMapping("/settled/{userEmail2}")
+    ResponseEntity<List<ExpenseResponseDTO>> getSettledExpenses(@PathVariable String userEmail2){
+        Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
+        List<ExpenseResponseDTO> list= expenseService.getSettledExpenses(authentication.getName(),userEmail2);
+        return ResponseEntity.ok().body(list);
     }
 
     //API getExpenseSplits

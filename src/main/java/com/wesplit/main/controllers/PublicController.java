@@ -42,7 +42,7 @@ public class PublicController {
 
     //API login
     @PostMapping("/login")
-    ResponseEntity<String> authenticateUser(@RequestBody LoginUser loginUser){
+    ResponseEntity<String> authenticateUser(@Valid @RequestBody LoginUser loginUser){
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginUser.getEmail(),loginUser.getPassword()));
         UserDetails userDetails=userDetailsService.loadUserByUsername(loginUser.getEmail());
         String token= jwtUtils.generateToken(userDetails.getUsername());

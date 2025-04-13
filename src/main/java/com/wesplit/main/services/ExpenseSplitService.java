@@ -13,5 +13,6 @@ public interface ExpenseSplitService {
     ExpenseSplit expenseSplitDTOToExpenseSplit(ExpenseSplitDTO expenseSplitDTO);
     ExpenseSplitDTO expenseSplitToExpenseSplitDTO(ExpenseSplit expenseSplit);
     List<ExpenseSplitDTO> getExpenseSplits(Long expenseId);
-    List<Expense> getExpenses(User user1,User user2);
+    List<Expense> getUnsettledExpenses(User user1,User user2);
+    List<Expense> getSettledExpenses(User user1,User user2);
 }

@@ -46,7 +46,7 @@ public class BalanceServiceImpl implements BalanceService {
 
     @Transactional
     @Override
-    public void updateBalance(User user1, User user2, BigDecimal owed) {
+    public void updateExpenseBalance(User user1, User user2, BigDecimal owed) {
         //retrieve the balance record between two users
         Balance balance= balanceRepository.findByUser1AndUser2(user1, user2).orElseGet(()->balanceRepository.findByUser1AndUser2(user2, user1).get());
         //syncing users with the record
@@ -54,6 +54,7 @@ public class BalanceServiceImpl implements BalanceService {
               //logic to see which user owes whom
               if(owed.compareTo(BigDecimal.ZERO)>0){
                   BigDecimal sum= balance.getOneOweTwo().add(owed);
+                  //logic to ensure one attribute is zero
                   BigDecimal temp=sum.subtract(balance.getTwoOweOne());
                   if(temp.compareTo(BigDecimal.ZERO)>0){
                       balance.setTwoOweOne(BigDecimal.ZERO);
@@ -115,4 +116,54 @@ public class BalanceServiceImpl implements BalanceService {
           }
     }
 
+    @Transactional
+    @Override
+    public Boolean updatePaymentBalance(User user1, User user2, BigDecimal paid) {
+        Boolean settled=false;
+        //retrieve the balance record between two users
+        Balance balance= balanceRepository.findByUser1AndUser2(user1, user2).orElseGet(()->balanceRepository.findByUser1AndUser2(user2, user1).get());
+        //syncing users with the record
+        if(balance.getUser1().getUserId().equals(user1.getUserId())) {
+            //logic to update balance
+            BigDecimal oneOweTwo= balance.getOneOweTwo();
+            if(oneOweTwo.equals(BigDecimal.ZERO)){
+                balance.setTwoOweOne(balance.getTwoOweOne().add(paid));
+            }
+            else{
+                BigDecimal difference=oneOweTwo.subtract(paid);
+                if(difference.compareTo(BigDecimal.ZERO)<=0){
+                    balance.setOneOweTwo(BigDecimal.ZERO);
+                    balance.setTwoOweOne(balance.getTwoOweOne().add(difference.negate()));
+                    settled=true;
+                }
+                else if(difference.compareTo(BigDecimal.ZERO)>0){
+                    balance.setOneOweTwo(balance.getOneOweTwo().subtract(paid));
+                }
+            }
+        }
+        else{
+            //logic to update balance
+            BigDecimal twoOweOne= balance.getTwoOweOne();
+            if(twoOweOne.equals(BigDecimal.ZERO)){
+                balance.setOneOweTwo(balance.getOneOweTwo().add(paid));
+            }
+            else{
+                BigDecimal difference= twoOweOne.subtract(paid);
+                if(difference.compareTo(BigDecimal.ZERO)<=0){
+                    balance.setTwoOweOne(BigDecimal.ZERO);
+                    balance.setOneOweTwo(balance.getOneOweTwo().add(difference.negate()));
+                    settled=true;
+                }
+                else{
+                    balance.setTwoOweOne(balance.getTwoOweOne().subtract(paid));
+                }
+            }
+        }
+        try{
+            balanceRepository.save(balance);
+            return settled;
+        } catch (Exception e) {
+            throw new TransactionFailedException("failed to update balance");
+        }
+    }
 }
