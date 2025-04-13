@@ -64,7 +64,7 @@ public class ExpenseServiceImpl implements ExpenseService{
                     .user(user2)
                     .build();
             //updating the balance
-            balanceService.updateBalance(user1,user2,half.negate());
+            balanceService.updateExpenseBalance(user1,user2,half.negate());
 
         }
         else if(expenseType.equals(ExpenseType.SPLIT_EQUALLY_PAIDBY_USER2)){
@@ -82,7 +82,7 @@ public class ExpenseServiceImpl implements ExpenseService{
                     .user(user2)
                     .build();
             //updating the balance
-            balanceService.updateBalance(user1,user2,half);
+            balanceService.updateExpenseBalance(user1,user2,half);
 
         }
         else if(expenseType.equals(ExpenseType.OWED_USER1)){
@@ -101,7 +101,7 @@ public class ExpenseServiceImpl implements ExpenseService{
                     .user(user2)
                     .build();
             //updating the balance
-            balanceService.updateBalance(user1,user2,amount.negate());
+            balanceService.updateExpenseBalance(user1,user2,amount.negate());
 
         }
         else if (expenseType.equals(ExpenseType.OWED_USER2)) {
@@ -120,7 +120,7 @@ public class ExpenseServiceImpl implements ExpenseService{
                     .user(user2)
                     .build();
             //updating the balance
-            balanceService.updateBalance(user1,user2,amount);
+            balanceService.updateExpenseBalance(user1,user2,amount);
 
         }
         else if(expense.getExpenseType().equals(ExpenseType.CUSTOM)){
@@ -145,7 +145,7 @@ public class ExpenseServiceImpl implements ExpenseService{
                          .build();
             //updating the balance
             BigDecimal owed= user1owe.subtract(user1paid);
-            balanceService.updateBalance(user1,user2,owed);
+            balanceService.updateExpenseBalance(user1,user2,owed);
         }
         else{
             throw new InvalidInputException("ExpenseType",expense.getExpenseType()+"");
@@ -155,6 +155,7 @@ public class ExpenseServiceImpl implements ExpenseService{
         newList.add(expenseSplit1);
         newList.add(expenseSplit2);
         expense.setSplitList(newList);
+        expense.setSettled(false);
         try{
             expenseRepository.save(expense);
             expense.setSplitList(null);
@@ -175,10 +176,32 @@ public class ExpenseServiceImpl implements ExpenseService{
     }
 
     @Override
-    public List<ExpenseResponseDTO> getExpenses(String email1, String email2) {
+    public List<ExpenseResponseDTO> getUnsettledExpenses(String email1, String email2) {
         User user1= userService.getUser(email1);
         User user2= userService.getUser(email2);
-        List<Expense> list= expenseSplitService.getExpenses(user1,user2);
+        List<Expense> list= expenseSplitService.getUnsettledExpenses(user1,user2);
         return list.stream().map((expense -> this.expenseToExpenseResponseDTO(expense))).toList();
+    }
+
+    @Override
+    public List<ExpenseResponseDTO> getSettledExpenses(String email1, String email2) {
+        User user1= userService.getUser(email1);
+        User user2= userService.getUser(email2);
+        List<Expense> list= expenseSplitService.getSettledExpenses(user1,user2);
+        return list.stream().map((expense -> this.expenseToExpenseResponseDTO(expense))).toList();
+    }
+
+    @Transactional
+    @Override
+    public void settleExpenses(User user1, User user2) {
+        try{
+            List<Expense> list= expenseSplitService.getUnsettledExpenses(user1,user2);
+            list.stream().forEach((expense)-> {
+                expense.setSettled(true);
+                expenseRepository.save(expense);
+            });
+        } catch (Exception e) {
+            throw new TransactionFailedException("failed to settle expenses");
+        }
     }
 }

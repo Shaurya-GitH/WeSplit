@@ -47,10 +47,4 @@ public class UserController {
       List<FriendDTO> friends= friendListService.getAllFriends(authentication.getName());
         return ResponseEntity.ok().body(friends);
     }
-
-    //API authCheck
-    @GetMapping("/auth/check")
-    ResponseEntity<?> checkLogin(){
-        return ResponseEntity.ok().build();
-    }
 }

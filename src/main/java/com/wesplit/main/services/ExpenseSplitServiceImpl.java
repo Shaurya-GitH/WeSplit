@@ -33,8 +33,13 @@ public class ExpenseSplitServiceImpl implements ExpenseSplitService{
     }
 
     @Override
-    public List<Expense> getExpenses(User user1, User user2) {
-        return expenseSplitRepository.getExpenses(user1, user2);
+    public List<Expense> getUnsettledExpenses(User user1, User user2) {
+        return expenseSplitRepository.getExpenses(user1, user2,false);
+    }
+
+    @Override
+    public List<Expense> getSettledExpenses(User user1, User user2) {
+        return expenseSplitRepository.getExpenses(user1,user2,true);
     }
 
 

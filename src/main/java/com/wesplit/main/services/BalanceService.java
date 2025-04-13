@@ -8,5 +8,6 @@ import java.math.BigDecimal;
 @Service
 public interface BalanceService {
     void addNewBalance(User user1, User user2);
-    void updateBalance(User user1, User user2, BigDecimal owed);
+    void updateExpenseBalance(User user1, User user2, BigDecimal owed);
+    Boolean updatePaymentBalance(User user1, User user2, BigDecimal paid);
 }

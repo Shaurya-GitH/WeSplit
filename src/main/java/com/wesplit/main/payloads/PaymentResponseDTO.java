@@ -10,11 +10,9 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ExpenseResponseDTO {
-    private Long expenseId;
-    private String description;
-    private BigDecimal amount;
+public class PaymentResponseDTO {
     private LocalDate createdAt;
-    private ExpenseType expenseType;
-    private Boolean settled;
+    private BigDecimal amountPaid;
+    private FriendDTO paidBy;
+    private FriendDTO paidTo;
 }
