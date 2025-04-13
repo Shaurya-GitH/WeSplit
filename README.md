@@ -2,9 +2,9 @@ WeSplit - Expense Sharing Web App 💸
 
 WeSplit is a full-stack expense sharing application inspired by Splitwise. Designed to make managing shared expenses, group balances, and settlements easier, it's ideal for roommates, travel groups, or anyone who splits costs regularly.
 
-🚀 Features (In Progress)
+
 🔐 User Authentication
-Secure user registration and login using Spring Security.
+Secure user registration and login using Spring Security (JWT).
 
 📋 Expense Tracking
 Add expenses, assign participants, and split amounts evenly or unevenly.
@@ -25,7 +25,7 @@ Efficient data handling and entity relationship mapping.
 Swagger integrated for easy visualization and testing of endpoints.
 
 🛣️ Planned Features
-🪪 JWT-based Authentication & Authorization
+🪪 Activity feed using Kafka and caching using redis
 
 🔔 Notification System for expenses & settlements
 
