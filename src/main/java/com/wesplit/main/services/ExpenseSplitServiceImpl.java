@@ -5,6 +5,7 @@ import com.wesplit.main.entities.ExpenseSplit;
 import com.wesplit.main.entities.User;
 import com.wesplit.main.payloads.ExpenseSplitDTO;
 import com.wesplit.main.repositories.ExpenseSplitRepository;
+import com.wesplit.main.utils.RedisUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -14,9 +15,11 @@ import java.util.List;
 public class ExpenseSplitServiceImpl implements ExpenseSplitService{
     final private ExpenseSplitRepository expenseSplitRepository;
     final private ModelMapper modelMapper;
-    ExpenseSplitServiceImpl(ExpenseSplitRepository expenseSplitRepository,ModelMapper modelMapper){
+    final private RedisUtil redisUtil;
+    ExpenseSplitServiceImpl(ExpenseSplitRepository expenseSplitRepository,ModelMapper modelMapper,RedisUtil redisUtil){
         this.expenseSplitRepository=expenseSplitRepository;
         this.modelMapper=modelMapper;
+        this.redisUtil=redisUtil;
     }
     @Override
     public ExpenseSplit expenseSplitDTOToExpenseSplit(ExpenseSplitDTO expenseSplitDTO) {

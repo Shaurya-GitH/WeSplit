@@ -1,6 +1,6 @@
 package com.wesplit.main.filter;
 
-import com.wesplit.main.utils.JwtUtils;
+import com.wesplit.main.utils.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,10 +19,10 @@ import java.io.IOException;
 @Component
 public class JwtFilter extends OncePerRequestFilter {
     private final UserDetailsService userDetailsService;
-    JwtUtils jwtUtils;
+    JwtUtil jwtUtil;
     @Autowired
-    JwtFilter(JwtUtils jwtUtils, UserDetailsService userDetailsService){
-        this.jwtUtils=jwtUtils;
+    JwtFilter(JwtUtil jwtUtil, UserDetailsService userDetailsService){
+        this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
     }
     @Override
@@ -32,11 +32,11 @@ public class JwtFilter extends OncePerRequestFilter {
         String email=null;
         if(authorizationHeader!=null && authorizationHeader.startsWith("Bearer ")){
             token=authorizationHeader.substring(7);
-            email=jwtUtils.extractUsername(token);
+            email= jwtUtil.extractUsername(token);
         }
         if(email!=null){
             UserDetails userDetails= userDetailsService.loadUserByUsername(email);
-           if(jwtUtils.validateToken(token)){
+           if(jwtUtil.validateToken(token)){
                UsernamePasswordAuthenticationToken authentication=new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                SecurityContextHolder.getContext().setAuthentication(authentication);

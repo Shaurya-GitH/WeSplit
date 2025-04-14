@@ -1,5 +1,6 @@
 package com.wesplit.main.services;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.wesplit.main.entities.Expense;
 import com.wesplit.main.entities.ExpenseSplit;
 import com.wesplit.main.entities.User;
@@ -7,10 +8,10 @@ import com.wesplit.main.exceptions.InvalidInputException;
 import com.wesplit.main.exceptions.TransactionFailedException;
 import com.wesplit.main.payloads.ExpenseDTO;
 import com.wesplit.main.payloads.ExpenseResponseDTO;
-import com.wesplit.main.payloads.ExpenseSplitDTO;
 import com.wesplit.main.payloads.ExpenseType;
 import com.wesplit.main.repositories.ExpenseRepository;
-import com.wesplit.main.repositories.ExpenseSplitRepository;
+import com.wesplit.main.utils.RedisUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 public class ExpenseServiceImpl implements ExpenseService{
     final private ExpenseRepository expenseRepository;
@@ -28,14 +30,16 @@ public class ExpenseServiceImpl implements ExpenseService{
     private final BalanceService balanceService;
     private final UserService userService;
     private final ExpenseSplitService expenseSplitService;
+    private final RedisUtil redisUtil;
 
     @Autowired
-    ExpenseServiceImpl(ExpenseRepository expenseRepository, ModelMapper modelMapper, BalanceService balanceService, UserService userService, ExpenseSplitService expenseSplitService){
+    ExpenseServiceImpl(ExpenseRepository expenseRepository, ModelMapper modelMapper, BalanceService balanceService, UserService userService, ExpenseSplitService expenseSplitService, RedisUtil redisUtil){
         this.expenseRepository=expenseRepository;
         this.modelMapper=modelMapper;
         this.balanceService = balanceService;
         this.userService = userService;
         this.expenseSplitService = expenseSplitService;
+        this.redisUtil=redisUtil;
     }
     @Transactional
     @Override
@@ -177,18 +181,33 @@ public class ExpenseServiceImpl implements ExpenseService{
 
     @Override
     public List<ExpenseResponseDTO> getUnsettledExpenses(String email1, String email2) {
-        User user1= userService.getUser(email1);
-        User user2= userService.getUser(email2);
-        List<Expense> list= expenseSplitService.getUnsettledExpenses(user1,user2);
-        return list.stream().map((expense -> this.expenseToExpenseResponseDTO(expense))).toList();
+        List<ExpenseResponseDTO> cache= redisUtil.getListValue(email1+"_"+email2+"_u_expenses", ExpenseResponseDTO.class);
+        if(cache!=null) return cache;
+        else{
+            User user1= userService.getUser(email1);
+            User user2= userService.getUser(email2);
+            List<Expense> list= expenseSplitService.getUnsettledExpenses(user1,user2);
+            List<ExpenseResponseDTO> returning= list.stream().map((this::expenseToExpenseResponseDTO)).toList();
+            redisUtil.setValue(email1+"_"+email2+"_u_expenses",returning,300L);
+            return returning;
+        }
     }
 
     @Override
     public List<ExpenseResponseDTO> getSettledExpenses(String email1, String email2) {
-        User user1= userService.getUser(email1);
-        User user2= userService.getUser(email2);
-        List<Expense> list= expenseSplitService.getSettledExpenses(user1,user2);
-        return list.stream().map((expense -> this.expenseToExpenseResponseDTO(expense))).toList();
+        List<ExpenseResponseDTO> cache= redisUtil.getListValue(email1+"_"+email2+"_s_expenses", ExpenseResponseDTO.class);
+        if(cache!=null){
+            return cache;
+        }
+        else {
+            log.info("cache was null");
+            User user1= userService.getUser(email1);
+            User user2= userService.getUser(email2);
+            List<Expense> list = expenseSplitService.getSettledExpenses(user1, user2);
+            List<ExpenseResponseDTO> returning= list.stream().map((this::expenseToExpenseResponseDTO)).toList();
+            redisUtil.setValue(email1 + "_" + email2 + "_s_expenses", returning,300L);
+            return returning;
+        }
     }
 
     @Transactional

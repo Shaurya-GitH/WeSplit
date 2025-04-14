@@ -3,7 +3,7 @@ package com.wesplit.main.controllers;
 import com.wesplit.main.payloads.LoginUser;
 import com.wesplit.main.payloads.UserDTO;
 import com.wesplit.main.services.UserService;
-import com.wesplit.main.utils.JwtUtils;
+import com.wesplit.main.utils.JwtUtil;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,14 +22,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class PublicController {
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
-    private final JwtUtils jwtUtils;
+    private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
 
     @Autowired
-    PublicController(UserService userService, AuthenticationManager authenticationManager, JwtUtils jwtUtils, UserDetailsService userDetailsService){
+    PublicController(UserService userService, AuthenticationManager authenticationManager, JwtUtil jwtUtil, UserDetailsService userDetailsService){
         this.userService=userService;
         this.authenticationManager=authenticationManager;
-        this.jwtUtils=jwtUtils;
+        this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
     }
 
@@ -45,7 +45,7 @@ public class PublicController {
     ResponseEntity<String> authenticateUser(@Valid @RequestBody LoginUser loginUser){
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginUser.getEmail(),loginUser.getPassword()));
         UserDetails userDetails=userDetailsService.loadUserByUsername(loginUser.getEmail());
-        String token= jwtUtils.generateToken(userDetails.getUsername());
+        String token= jwtUtil.generateToken(userDetails.getUsername());
         return ResponseEntity.ok().body(token);
     }
 }
