@@ -50,7 +50,7 @@ public class ExpenseServiceImpl implements ExpenseService{
         ExpenseType expenseType= expense.getExpenseType();
         ExpenseSplit expenseSplit1;
         ExpenseSplit expenseSplit2;
-        Boolean settled=false;
+        Boolean settled;
         BigDecimal amount=expense.getAmount();
         if(amount.equals(BigDecimal.ZERO))throw new InvalidInputException("amount","less than 0");
         BigDecimal half=amount.divide(BigDecimal.valueOf(2),2,RoundingMode.HALF_UP);
@@ -174,6 +174,7 @@ public class ExpenseServiceImpl implements ExpenseService{
             expenseRepository.save(expense);
             return this.expenseToExpenseResponseDTO(expense);
         } catch (Exception e) {
+            log.error(e.getMessage());
             throw new TransactionFailedException("Failed to add expense");
         }
     }
@@ -229,6 +230,7 @@ public class ExpenseServiceImpl implements ExpenseService{
                 expenseRepository.save(expense);
             });
         } catch (Exception e) {
+            log.error(e.getMessage());
             throw new TransactionFailedException("failed to settle expenses");
         }
     }

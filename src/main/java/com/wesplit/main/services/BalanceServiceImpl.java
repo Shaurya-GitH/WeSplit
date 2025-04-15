@@ -3,17 +3,23 @@ package com.wesplit.main.services;
 import com.wesplit.main.entities.Balance;
 import com.wesplit.main.entities.User;
 import com.wesplit.main.exceptions.TransactionFailedException;
+import com.wesplit.main.payloads.BalanceDTO;
 import com.wesplit.main.repositories.BalanceRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
+@Slf4j
 @Service
 public class BalanceServiceImpl implements BalanceService {
-    private BalanceRepository balanceRepository;
-    BalanceServiceImpl(BalanceRepository balanceRepository){
+    private final ModelMapper modelMapper;
+    private final BalanceRepository balanceRepository;
+    BalanceServiceImpl(BalanceRepository balanceRepository, ModelMapper modelMapper){
         this.balanceRepository=balanceRepository;
+        this.modelMapper = modelMapper;
     }
 
     @Transactional
@@ -39,6 +45,7 @@ public class BalanceServiceImpl implements BalanceService {
            try{
                balanceRepository.save(newBalance);
            } catch (Exception e) {
+               log.error(e.getMessage());
                throw new TransactionFailedException("failed to create a balance record");
            }
        }
@@ -173,6 +180,7 @@ public class BalanceServiceImpl implements BalanceService {
               balanceRepository.save(balance);
               return settled;
           } catch (Exception e) {
+              log.error(e.getMessage());
               throw new TransactionFailedException("Failed to update balance record");
           }
     }
@@ -224,7 +232,20 @@ public class BalanceServiceImpl implements BalanceService {
             balanceRepository.save(balance);
             return settled;
         } catch (Exception e) {
+            log.error(e.getMessage());
             throw new TransactionFailedException("failed to update balance");
         }
+    }
+
+    @Override
+    public BalanceDTO getBalance(User user1, User user2) {
+        //retrieve the balance record between two users
+        Balance balance= balanceRepository.findByUser1AndUser2(user1, user2).orElseGet(()->balanceRepository.findByUser1AndUser2(user2, user1).get());
+        return this.balanceToBalanceDTO(balance);
+    }
+
+    @Override
+    public BalanceDTO balanceToBalanceDTO(Balance balance) {
+        return modelMapper.map(balance, BalanceDTO.class);
     }
 }

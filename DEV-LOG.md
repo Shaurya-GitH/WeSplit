@@ -40,3 +40,8 @@ A development log to track daily progress, ideas, bugs, and reflections while bu
 - ✅ Fully integrated Redis caching of frequently accessed data
 - ✅ Caching reduced retrieval time to as low as 10ms
 
+## 🗓️ 2025-04-16
+
+- ✅ Added API to retrieve balances
+- ✅ Added proper logging for errors
+
