@@ -26,6 +26,17 @@ A development log to track daily progress, ideas, bugs, and reflections while bu
 - Gained a deeper understanding of **what JWT actually is**:
     - A compact, URL-safe token format that includes a header, payload, and signature.
     - Realized that JWT can store user identity and other metadata in its payload, allowing for efficient and secure user verification without hitting the database every time.
-
 ---
+
+## 🗓️ 2025-04-14
+
+- ✅ Integrated **JWT authentication and authorization** into the project.
+- ✅ Configured **security filters** to validate JWTs and extract user details.
+- ✅ Secured API endpoints using **role-based access** with `.hasRole(...)` in the security config.
+- ✅ Learned **Redis** concepts, caching strategies, and planned its integration with utility methods.
+
+## 🗓️ 2025-04-15
+
+- ✅ Fully integrated Redis caching of frequently accessed data
+
 

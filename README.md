@@ -1,42 +1,53 @@
-WeSplit - Expense Sharing Web App 💸
+# WeSplit - Expense Sharing Web App 
 
-WeSplit is a full-stack expense sharing application inspired by Splitwise. Designed to make managing shared expenses, group balances, and settlements easier, it's ideal for roommates, travel groups, or anyone who splits costs regularly.
+**WeSplit** is a full-stack expense sharing application inspired by Splitwise. Designed to make managing shared expenses, group balances, and settlements easier, it's ideal for roommates, travel groups, or anyone who splits costs regularly.
 
+---
 
-🔐 User Authentication
-Secure user registration and login using Spring Security (JWT).
+## 🔑 Features
 
-📋 Expense Tracking
-Add expenses, assign participants, and split amounts evenly or unevenly.
+###  User Authentication
+- Secure user registration and login using **Spring Security** and **JWT tokens**.
 
-👥 Group Management
-Create groups to manage expenses among multiple users.
+###  Expense Tracking
+- Add expenses, assign participants, and split amounts evenly or unevenly.
 
-📊 Balance Calculation
-Automatically track who owes whom and how much.
+###  Group Management
+- Create and manage groups to organize shared expenses among multiple users.
 
-🛠 Robust REST API
-Modular and secure APIs built using Spring Boot and validated thoroughly.
+###  Balance Calculation
+- Real-time tracking of who owes whom and how much.
 
-🐘 MySQL + Hibernate/JPA
-Efficient data handling and entity relationship mapping.
+###  Robust REST API
+- Clean and modular APIs built with **Spring Boot** and validated thoroughly.
+- Follows RESTful principles with DTO projections and proper layering.
 
-📄 API Documentation
-Swagger integrated for easy visualization and testing of endpoints.
+###  MySQL + Hibernate/JPA
+- Efficient relational data handling with **eager loading**, **DTO projections**, and prevention of **N+1 query issues**.
 
-🛣️ Planned Features
-🪪 Activity feed using Kafka and caching using redis
+### Caching using Redis
+- Used NoSQL database **Redis** for caching of data which require heavy SQL queries and accessed frequently
 
-🔔 Notification System for expenses & settlements
+###  API Documentation
+- Integrated **Swagger UI** for easy visualization and testing of endpoints.
 
-💸 Group Settlement Logic
+---
 
-🧪 Test Coverage using JUnit & Mockito
+## 🛣️ Planned Features
 
-📦 Tech Stack
-Backend: Java, Spring Boot, Spring Security, Spring Data JPA, MySQL
+-  **Activity Feed** using **Kafka**
+-  Integrating API for **currency** conversion
+-  **Notification System** for expenses & settlements
+-  **Group Settlement Logic**
+-  **Test Coverage** using JUnit & Mockito
 
-Tools: Swagger, Postman, IntelliJ IDEA, Maven
+---
 
-Version Control: Git, GitHub
+## 💻 Tech Stack
+
+- **Backend:** Java, Spring Boot, Spring Security, Spring Data JPA, MySQL, Redis
+- **Tools:** Swagger, Postman, IntelliJ IDEA, Maven
+- **Version Control:** Git, GitHub
+
+---
 
