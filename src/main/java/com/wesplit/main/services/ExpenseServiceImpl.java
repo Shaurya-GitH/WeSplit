@@ -50,6 +50,7 @@ public class ExpenseServiceImpl implements ExpenseService{
         ExpenseType expenseType= expense.getExpenseType();
         ExpenseSplit expenseSplit1;
         ExpenseSplit expenseSplit2;
+        Boolean settled=false;
         BigDecimal amount=expense.getAmount();
         if(amount.equals(BigDecimal.ZERO))throw new InvalidInputException("amount","less than 0");
         BigDecimal half=amount.divide(BigDecimal.valueOf(2),2,RoundingMode.HALF_UP);
@@ -68,7 +69,7 @@ public class ExpenseServiceImpl implements ExpenseService{
                     .user(user2)
                     .build();
             //updating the balance
-            balanceService.updateExpenseBalance(user1,user2,half.negate());
+            settled= balanceService.updateExpenseBalance(user1,user2,half.negate());
 
         }
         else if(expenseType.equals(ExpenseType.SPLIT_EQUALLY_PAIDBY_USER2)){
@@ -86,7 +87,7 @@ public class ExpenseServiceImpl implements ExpenseService{
                     .user(user2)
                     .build();
             //updating the balance
-            balanceService.updateExpenseBalance(user1,user2,half);
+            settled= balanceService.updateExpenseBalance(user1,user2,half);
 
         }
         else if(expenseType.equals(ExpenseType.OWED_USER1)){
@@ -105,7 +106,7 @@ public class ExpenseServiceImpl implements ExpenseService{
                     .user(user2)
                     .build();
             //updating the balance
-            balanceService.updateExpenseBalance(user1,user2,amount.negate());
+             settled= balanceService.updateExpenseBalance(user1,user2,amount.negate());
 
         }
         else if (expenseType.equals(ExpenseType.OWED_USER2)) {
@@ -124,7 +125,7 @@ public class ExpenseServiceImpl implements ExpenseService{
                     .user(user2)
                     .build();
             //updating the balance
-            balanceService.updateExpenseBalance(user1,user2,amount);
+            settled= balanceService.updateExpenseBalance(user1,user2,amount);
 
         }
         else if(expense.getExpenseType().equals(ExpenseType.CUSTOM)){
@@ -149,20 +150,28 @@ public class ExpenseServiceImpl implements ExpenseService{
                          .build();
             //updating the balance
             BigDecimal owed= user1owe.subtract(user1paid);
-            balanceService.updateExpenseBalance(user1,user2,owed);
+            settled= balanceService.updateExpenseBalance(user1,user2,owed);
         }
         else{
             throw new InvalidInputException("ExpenseType",expense.getExpenseType()+"");
+        }
+        //settling the expenses
+        if(settled==null || settled){
+            this.settleExpenses(user1,user2);
         }
         //adding the expense splits to expense object
         List<ExpenseSplit> newList=new ArrayList<>();
         newList.add(expenseSplit1);
         newList.add(expenseSplit2);
         expense.setSplitList(newList);
-        expense.setSettled(false);
+        if(settled!=null && settled){
+            expense.setSettled(settled);
+        }
+        else {
+            expense.setSettled(false);
+        }
         try{
             expenseRepository.save(expense);
-            expense.setSplitList(null);
             return this.expenseToExpenseResponseDTO(expense);
         } catch (Exception e) {
             throw new TransactionFailedException("Failed to add expense");

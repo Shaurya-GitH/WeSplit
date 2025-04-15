@@ -26,7 +26,7 @@
 - Efficient relational data handling with **eager loading**, **DTO projections**, and prevention of **N+1 query issues**.
 
 ### Caching using Redis
-- Used NoSQL database **Redis** for caching of data which require heavy SQL queries and accessed frequently
+- Used NoSQL database **Redis** for caching of data which require heavy SQL queries and accessed frequently reducing time to as low as **10ms**
 
 ###  API Documentation
 - Integrated **Swagger UI** for easy visualization and testing of endpoints.

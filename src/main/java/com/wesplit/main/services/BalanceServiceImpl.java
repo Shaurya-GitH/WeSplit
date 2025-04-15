@@ -46,71 +46,132 @@ public class BalanceServiceImpl implements BalanceService {
 
     @Transactional
     @Override
-    public void updateExpenseBalance(User user1, User user2, BigDecimal owed) {
+    //returns false if expenses are not settled
+    //returns null if expenses change direction
+    //return true if expenses are settled
+    public Boolean updateExpenseBalance(User user1, User user2, BigDecimal owed) {
+        Boolean settled=false;
         //retrieve the balance record between two users
         Balance balance= balanceRepository.findByUser1AndUser2(user1, user2).orElseGet(()->balanceRepository.findByUser1AndUser2(user2, user1).get());
         //syncing users with the record
           if(balance.getUser1().getUserId().equals(user1.getUserId())){
               //logic to see which user owes whom
               if(owed.compareTo(BigDecimal.ZERO)>0){
-                  BigDecimal sum= balance.getOneOweTwo().add(owed);
-                  //logic to ensure one attribute is zero
-                  BigDecimal temp=sum.subtract(balance.getTwoOweOne());
-                  if(temp.compareTo(BigDecimal.ZERO)>0){
-                      balance.setTwoOweOne(BigDecimal.ZERO);
-                      balance.setOneOweTwo(temp);
-                  }
-                  else{
-                      balance.setTwoOweOne(temp.negate());
-                      balance.setOneOweTwo(BigDecimal.ZERO);
-                  }
-
+                 if(balance.getOneOweTwo().compareTo(BigDecimal.ZERO)>0){
+                     balance.setOneOweTwo(balance.getOneOweTwo().add(owed));
+                 }
+                 else{
+                     if(balance.getTwoOweOne().compareTo(BigDecimal.ZERO)==0){
+                         balance.setOneOweTwo(owed);
+                     }
+                     else {
+                         BigDecimal difference=balance.getTwoOweOne().subtract(owed);
+                         int compare= difference.compareTo(BigDecimal.ZERO);
+                         if(compare<=0){
+                             balance.setTwoOweOne(BigDecimal.ZERO);
+                             balance.setOneOweTwo(difference.negate());
+                             if(compare==0){
+                                 settled=true;
+                             }
+                             else{
+                                 settled=null;
+                             }
+                         }
+                         else if(compare>0){
+                             balance.setTwoOweOne(balance.getTwoOweOne().subtract(owed));
+                         }
+                     }
+                 }
               }
               else{
-                  BigDecimal sum= balance.getTwoOweOne().add(owed.negate());
-                  //logic to ensure one attribute is zero
-                  BigDecimal temp= balance.getOneOweTwo().subtract(sum);
-                  if(temp.compareTo(BigDecimal.ZERO)>0){
-                      balance.setTwoOweOne(BigDecimal.ZERO);
-                      balance.setOneOweTwo(temp);
+                  if(balance.getTwoOweOne().compareTo(BigDecimal.ZERO)>0){
+                      balance.setTwoOweOne(balance.getTwoOweOne().add(owed.negate()));
                   }
                   else{
-                      balance.setTwoOweOne(temp.negate());
-                      balance.setOneOweTwo(BigDecimal.ZERO);
+                      if(balance.getOneOweTwo().compareTo(BigDecimal.ZERO)==0){
+                          balance.setTwoOweOne(owed.negate());
+                      }
+                      else {
+                          BigDecimal difference=balance.getOneOweTwo().subtract(owed.negate());
+                          int compare= difference.compareTo(BigDecimal.ZERO);
+                          if(compare<=0){
+                              balance.setOneOweTwo(BigDecimal.ZERO);
+                              balance.setTwoOweOne(difference.negate());
+                              if(compare==0){
+                                  settled=true;
+                              }
+                              else{
+                                  settled=null;
+                              }
+                          }
+                          else if(compare>0){
+                              balance.setOneOweTwo(balance.getOneOweTwo().subtract(owed.negate()));
+                          }
+                      }
                   }
+
               }
           }
           else{
               if(owed.compareTo(BigDecimal.ZERO)>0){
-                  BigDecimal sum= balance.getTwoOweOne().add(owed);
-                  //logic to ensure one attribute is zero
-                  BigDecimal temp= balance.getOneOweTwo().subtract(sum);
-                  if(temp.compareTo(BigDecimal.ZERO)>0){
-                      balance.setTwoOweOne(BigDecimal.ZERO);
-                      balance.setOneOweTwo(temp);
+                  if(balance.getTwoOweOne().compareTo(BigDecimal.ZERO)>0){
+                      balance.setTwoOweOne(balance.getTwoOweOne().add(owed));
                   }
                   else{
-                      balance.setTwoOweOne(temp.negate());
-                      balance.setOneOweTwo(BigDecimal.ZERO);
+                      if(balance.getOneOweTwo().compareTo(BigDecimal.ZERO)==0){
+                          balance.setTwoOweOne(owed);
+                      }
+                      else {
+                          BigDecimal difference=balance.getOneOweTwo().subtract(owed);
+                          int compare= difference.compareTo(BigDecimal.ZERO);
+                          if(compare<=0){
+                              balance.setOneOweTwo(BigDecimal.ZERO);
+                              balance.setTwoOweOne(difference.negate());
+                              if(compare==0){
+                                  settled=true;
+                              }
+                              else{
+                                  settled=null;
+                              }
+                          }
+                          else if(compare>0){
+                              balance.setOneOweTwo(balance.getOneOweTwo().subtract(owed));
+                          }
+                      }
                   }
 
               }
               else{
-                  BigDecimal sum= balance.getOneOweTwo().add(owed.negate());
-                  //logic to ensure one attribute is zero
-                  BigDecimal temp= sum.subtract(balance.getTwoOweOne());
-                  if(temp.compareTo(BigDecimal.ZERO)>0){
-                      balance.setTwoOweOne(BigDecimal.ZERO);
-                      balance.setOneOweTwo(temp);
+                  if(balance.getOneOweTwo().compareTo(BigDecimal.ZERO)>0){
+                      balance.setOneOweTwo(balance.getOneOweTwo().add(owed.negate()));
                   }
                   else{
-                      balance.setTwoOweOne(temp.negate());
-                      balance.setOneOweTwo(BigDecimal.ZERO);
+                      if(balance.getTwoOweOne().compareTo(BigDecimal.ZERO)==0){
+                          balance.setOneOweTwo(owed.negate());
+                      }
+                      else {
+                          BigDecimal difference=balance.getTwoOweOne().subtract(owed.negate());
+                          int compare= difference.compareTo(BigDecimal.ZERO);
+                          if(compare<=0){
+                              balance.setTwoOweOne(BigDecimal.ZERO);
+                              balance.setOneOweTwo(difference.negate());
+                              if(compare==0){
+                                  settled=true;
+                              }
+                              else{
+                                  settled=null;
+                              }
+                          }
+                          else if(difference.compareTo(BigDecimal.ZERO)>0){
+                              balance.setTwoOweOne(balance.getTwoOweOne().subtract(owed.negate()));
+                          }
+                      }
                   }
               }
           }
           try{
               balanceRepository.save(balance);
+              return settled;
           } catch (Exception e) {
               throw new TransactionFailedException("Failed to update balance record");
           }
