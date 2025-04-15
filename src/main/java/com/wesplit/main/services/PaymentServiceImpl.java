@@ -6,12 +6,14 @@ import com.wesplit.main.exceptions.TransactionFailedException;
 import com.wesplit.main.payloads.PaymentDTO;
 import com.wesplit.main.payloads.PaymentResponseDTO;
 import com.wesplit.main.repositories.PaymentRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class PaymentServiceImpl implements PaymentService{
     private final BalanceService balanceService;
@@ -43,6 +45,7 @@ public class PaymentServiceImpl implements PaymentService{
                 expenseService.settleExpenses(user1,user2);
             }
         } catch (Exception e) {
+            log.error(e.getMessage());
             throw new TransactionFailedException("failed to save payment record");
         }
     }

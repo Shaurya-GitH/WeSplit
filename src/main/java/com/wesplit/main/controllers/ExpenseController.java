@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/expense")
+@RequestMapping("/api/expense")
 public class ExpenseController {
     private final ExpenseSplitService expenseSplitService;
     private final ExpenseService expenseService;
@@ -26,18 +26,18 @@ public class ExpenseController {
         this.expenseSplitService = expenseSplitService;
     }
     //API addExpense
-    @PostMapping("/create-solo/{user2}")
-    ResponseEntity<ExpenseResponseDTO> createExpense(@Valid @RequestBody ExpenseDTO expenseDTO, @PathVariable String user2){
+    @PostMapping("/create-solo/{user2Email}")
+    ResponseEntity<ExpenseResponseDTO> createExpense(@Valid @RequestBody ExpenseDTO expenseDTO, @PathVariable String user2Email){
        Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
-       ExpenseResponseDTO newExpense= expenseService.createExpense(expenseDTO,authentication.getName(),user2);
+       ExpenseResponseDTO newExpense= expenseService.createExpense(expenseDTO,authentication.getName(),user2Email);
         return ResponseEntity.status(HttpStatus.CREATED).body(newExpense);
     }
 
     //API getUnsettledExpenses
-    @GetMapping("/unsettled/{userEmail2}")
-    ResponseEntity<List<ExpenseResponseDTO>> getUnsettledExpenses(@PathVariable String userEmail2){
+    @GetMapping("/unsettled/{user2Email}")
+    ResponseEntity<List<ExpenseResponseDTO>> getUnsettledExpenses(@PathVariable String user2Email){
        Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
-       List<ExpenseResponseDTO> list= expenseService.getUnsettledExpenses(authentication.getName(),userEmail2);
+       List<ExpenseResponseDTO> list= expenseService.getUnsettledExpenses(authentication.getName(),user2Email);
        return ResponseEntity.ok().body(list);
     }
 

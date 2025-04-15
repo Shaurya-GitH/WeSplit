@@ -1,9 +1,6 @@
 package com.wesplit.main.controllers;
 
-import com.wesplit.main.entities.User;
 import com.wesplit.main.payloads.FriendDTO;
-import com.wesplit.main.payloads.UserDTO;
-import com.wesplit.main.repositories.FriendListRepository;
 import com.wesplit.main.services.FriendListService;
 import com.wesplit.main.services.UserService;
 import jakarta.validation.Valid;
@@ -16,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 public class UserController {
     private final UserService userService;
     private final FriendListService friendListService;

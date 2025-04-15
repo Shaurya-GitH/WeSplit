@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/public")
+@RequestMapping("/api/public")
 public class PublicController {
     private final UserService userService;
     private final AuthenticationManager authenticationManager;

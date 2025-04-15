@@ -9,6 +9,7 @@ import com.wesplit.main.exceptions.TransactionFailedException;
 import com.wesplit.main.payloads.FriendDTO;
 import com.wesplit.main.payloads.UserDTO;
 import com.wesplit.main.repositories.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -84,6 +86,7 @@ public class UserServiceImpl implements UserService {
                     User newUser= userRepository.save(friendUser);
                     return this.userToUserDto(newUser);
                 } catch (Exception ex) {
+                    log.error(ex.getMessage());
                     throw new TransactionFailedException("Failed to save friend as a user");
                 }
             }
@@ -138,6 +141,7 @@ public class UserServiceImpl implements UserService {
                 return this.userToFriendDTO(newUser);
             }
             catch (Exception e){
+                log.error(e.getMessage());
                 throw new TransactionFailedException("Failed to add friend");
             }
         }
