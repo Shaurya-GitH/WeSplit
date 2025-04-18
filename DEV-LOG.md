@@ -45,3 +45,7 @@ A development log to track daily progress, ideas, bugs, and reflections while bu
 - ✅ Added API to retrieve balances
 - ✅ Added proper logging for errors
 
+## 🗓️ 2025-04-17
+
+- ✅ Added pessimistic locking for balance modification ensuring that two users don't settle expenses simultaneously
+
