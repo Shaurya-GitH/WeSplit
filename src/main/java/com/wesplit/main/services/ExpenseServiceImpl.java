@@ -1,19 +1,23 @@
 package com.wesplit.main.services;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.wesplit.main.entities.Expense;
 import com.wesplit.main.entities.ExpenseSplit;
 import com.wesplit.main.entities.User;
 import com.wesplit.main.exceptions.InvalidInputException;
+import com.wesplit.main.exceptions.TooManyRequestsException;
 import com.wesplit.main.exceptions.TransactionFailedException;
 import com.wesplit.main.payloads.ExpenseDTO;
 import com.wesplit.main.payloads.ExpenseResponseDTO;
 import com.wesplit.main.payloads.ExpenseType;
+import com.wesplit.main.payloads.ThrottlePOJO;
 import com.wesplit.main.repositories.ExpenseRepository;
 import com.wesplit.main.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +25,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -31,19 +37,43 @@ public class ExpenseServiceImpl implements ExpenseService{
     private final UserService userService;
     private final ExpenseSplitService expenseSplitService;
     private final RedisUtil redisUtil;
+    private final RedisTemplate<Object, Object> redisTemplate;
 
     @Autowired
-    ExpenseServiceImpl(ExpenseRepository expenseRepository, ModelMapper modelMapper, BalanceService balanceService, UserService userService, ExpenseSplitService expenseSplitService, RedisUtil redisUtil){
+    ExpenseServiceImpl(ExpenseRepository expenseRepository, ModelMapper modelMapper, BalanceService balanceService, UserService userService, ExpenseSplitService expenseSplitService, RedisUtil redisUtil, RedisTemplate<Object, Object> redisTemplate){
         this.expenseRepository=expenseRepository;
         this.modelMapper=modelMapper;
         this.balanceService = balanceService;
         this.userService = userService;
         this.expenseSplitService = expenseSplitService;
         this.redisUtil=redisUtil;
+        this.redisTemplate = redisTemplate;
     }
     @Transactional
     @Override
     public ExpenseResponseDTO createExpense(ExpenseDTO expenseDTO, String userEmail1, String userEmail2) {
+        //check if user2 is user1
+        if(userEmail1.equals(userEmail2)){
+            throw new InvalidInputException("user 2 as","yourself");
+        }
+
+        //Api throttling
+        String value=(String) redisTemplate.opsForValue().get(userEmail1+"_createExpense");
+        if(value!=null){
+            Integer integer=Integer.valueOf(value);
+            if(integer>9){
+                throw new TooManyRequestsException(10,"createExpense","60 seconds");
+            }
+            else{
+                redisTemplate.opsForValue().increment(userEmail1+"_createExpense");
+            }
+        }
+        else{
+            redisTemplate.opsForValue().increment(userEmail1+"_createExpense");
+            redisTemplate.expire(userEmail1+"_createExpense",60L, TimeUnit.SECONDS);
+        }
+
+        //method logic
         User user1= userService.getUser(userEmail1);
         User user2=userService.getUser(userEmail2);
         Expense expense=this.expenseDTOToExpense(expenseDTO);
@@ -210,7 +240,6 @@ public class ExpenseServiceImpl implements ExpenseService{
             return cache;
         }
         else {
-            log.info("cache was null");
             User user1= userService.getUser(email1);
             User user2= userService.getUser(email2);
             List<Expense> list = expenseSplitService.getSettledExpenses(user1, user2);

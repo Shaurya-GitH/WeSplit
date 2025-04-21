@@ -62,4 +62,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(resp);
     }
 
+    @ExceptionHandler(TooManyRequestsException.class)
+    ResponseEntity<ExceptionMessage> tooManyRequestsException(TooManyRequestsException e){
+        ExceptionMessage exceptionMessage= ExceptionMessage.builder()
+                .exception(e.getMessage())
+                .exceptionType("TooManyRequestsException")
+                .build();
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(exceptionMessage);
+    }
+
 }
