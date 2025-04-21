@@ -49,3 +49,8 @@ A development log to track daily progress, ideas, bugs, and reflections while bu
 
 - ✅ Added pessimistic locking for balance modification ensuring that two users don't settle expenses simultaneously
 
+## 🗓️ 2025-04-21
+
+- ✅ Explored redis and its functionalities and implement API rate limiting using redis operations
+- ✅ Added check to prevent calling APIs with user1 as the user2
+

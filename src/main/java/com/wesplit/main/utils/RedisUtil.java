@@ -28,7 +28,6 @@ public class RedisUtil {
             if(o!=null){
                 String jsonValue= objectMapper.writeValueAsString(o);
                 redisTemplate.opsForValue().set(key,jsonValue,ttl, TimeUnit.SECONDS);
-                log.info("values set in redis");
             }
         } catch (JsonProcessingException e) {
             log.error(e.getMessage());
@@ -54,11 +53,9 @@ public class RedisUtil {
         try{
             String o=(String) redisTemplate.opsForValue().get(key);
             if(o!=null){
-                log.info("retrieved from cache");
                 return objectMapper.readValue(o, objectMapper.getTypeFactory().constructCollectionType(List.class,T));
             }
             else{
-                log.info("nothing stored in cache");
                 return null;
             }
         }
