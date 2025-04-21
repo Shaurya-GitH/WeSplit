@@ -26,6 +26,8 @@ public class Expense {
     private LocalDate createdAt;
     private ExpenseType expenseType;
     private Boolean settled;
+    @Column(nullable = false)
+    private String currency;
 
     @OneToMany(mappedBy = "expense", cascade = CascadeType.ALL)
     private List<ExpenseSplit> splitList;

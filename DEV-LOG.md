@@ -51,6 +51,11 @@ A development log to track daily progress, ideas, bugs, and reflections while bu
 
 ## 🗓️ 2025-04-21
 
-- ✅ Explored redis and its functionalities and implement API rate limiting using redis operations
+- ✅ Explored redis and its functionalities and implemented API rate limiting using redis operations
 - ✅ Added check to prevent calling APIs with user1 as the user2
+
+## 🗓️ 2025-04-22
+
+- ✅ Integrated external API for currency conversion
+- ✅ Automated currency conversion by making it possible to pay in any currency
 

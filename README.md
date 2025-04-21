@@ -17,6 +17,7 @@
 
 ###  Balance Calculation
 - Real-time tracking of who owes whom and how much.
+- External API integration for automatic currency conversion while settling balances
 
 ###  Robust REST API
 - Clean and modular APIs built with **Spring Boot** and validated thoroughly.
@@ -37,7 +38,6 @@
 ## 🛣️ Planned Features
 
 -  **Activity Feed** using **Kafka**
--  Integrating API for **currency** conversion
 -  **Notification System** for expenses & settlements using websockets
 -  **Group Settlement Logic**
 -  **Test Coverage** using JUnit & Mockito

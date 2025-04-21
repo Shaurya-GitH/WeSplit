@@ -17,9 +17,12 @@ import java.math.BigDecimal;
 public class BalanceServiceImpl implements BalanceService {
     private final ModelMapper modelMapper;
     private final BalanceRepository balanceRepository;
-    BalanceServiceImpl(BalanceRepository balanceRepository, ModelMapper modelMapper){
+    private final CurrencyService currencyService;
+
+    BalanceServiceImpl(BalanceRepository balanceRepository, ModelMapper modelMapper, CurrencyService currencyService){
         this.balanceRepository=balanceRepository;
         this.modelMapper = modelMapper;
+        this.currencyService = currencyService;
     }
 
     @Transactional
@@ -56,8 +59,9 @@ public class BalanceServiceImpl implements BalanceService {
     //returns false if expenses are not settled
     //returns null if expenses change direction
     //return true if expenses are settled
-    public Boolean updateExpenseBalance(User user1, User user2, BigDecimal owed) {
+    public Boolean updateExpenseBalance(User user1, User user2, BigDecimal initialOwed,String currency) {
         Boolean settled=false;
+        BigDecimal owed=currencyService.updateConversion(initialOwed,currency);
         //retrieve the balance record between two users
         Balance balance= balanceRepository.findByUser1AndUser2(user1, user2).orElseGet(()->balanceRepository.findByUser1AndUser2(user2, user1).get());
         //syncing users with the record
@@ -187,8 +191,9 @@ public class BalanceServiceImpl implements BalanceService {
 
     @Transactional
     @Override
-    public Boolean updatePaymentBalance(User user1, User user2, BigDecimal paid) {
+    public Boolean updatePaymentBalance(User user1, User user2, BigDecimal initialPaid,String currency) {
         Boolean settled=false;
+        BigDecimal paid=currencyService.updateConversion(initialPaid,currency);
         //retrieve the balance record between two users
         Balance balance= balanceRepository.findByUser1AndUser2(user1, user2).orElseGet(()->balanceRepository.findByUser1AndUser2(user2, user1).get());
         //syncing users with the record
@@ -237,11 +242,13 @@ public class BalanceServiceImpl implements BalanceService {
         }
     }
 
+    @Transactional
     @Override
-    public BalanceDTO getBalance(User user1, User user2) {
+    public BalanceDTO getBalance(User user1, User user2,String currency) {
         //retrieve the balance record between two users
         Balance balance= balanceRepository.findByUser1AndUser2(user1, user2).orElseGet(()->balanceRepository.findByUser1AndUser2(user2, user1).get());
-        return this.balanceToBalanceDTO(balance);
+        BalanceDTO balanceDTO= this.balanceToBalanceDTO(balance);
+        return currencyService.displayBalance(balanceDTO,currency);
     }
 
     @Override

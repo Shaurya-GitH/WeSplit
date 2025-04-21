@@ -18,6 +18,7 @@ public class Balance {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long balanceId;
+    //balance is stored in INR
     private BigDecimal oneOweTwo;
     private BigDecimal twoOweOne;
 

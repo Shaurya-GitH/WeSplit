@@ -16,4 +16,6 @@ public class PaymentDTO {
     private LocalDate createdAt;
     @NotNull
     private BigDecimal amountPaid;
+    @NotNull
+    private String currency;
 }

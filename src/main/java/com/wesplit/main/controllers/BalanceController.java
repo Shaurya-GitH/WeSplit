@@ -6,10 +6,7 @@ import com.wesplit.main.services.BalanceService;
 import com.wesplit.main.services.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/balance")
@@ -25,11 +22,11 @@ public class BalanceController {
 
     //API getBalance
     @GetMapping("/{user2Email}")
-    ResponseEntity<BalanceDTO> getBalance(@PathVariable String user2Email){
+    ResponseEntity<BalanceDTO> getBalance(@PathVariable String user2Email, @CookieValue("currency") String currency){
         String user1Email= SecurityContextHolder.getContext().getAuthentication().getName();
         User user1= userService.getUser(user1Email);
         User user2= userService.getUser(user2Email);
-        BalanceDTO balance= balanceService.getBalance(user1,user2);
+        BalanceDTO balance= balanceService.getBalance(user1,user2,currency);
         return ResponseEntity.ok().body(balance);
     }
 }

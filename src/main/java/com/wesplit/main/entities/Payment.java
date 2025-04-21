@@ -21,6 +21,8 @@ public class Payment {
     private LocalDate createdAt;
     @Column(nullable = false)
     private BigDecimal amountPaid;
+    @Column(nullable = false)
+    private String currency;
 
     @ManyToOne
     @JoinColumn(name = "paid_by", referencedColumnName = "userId",nullable = false)

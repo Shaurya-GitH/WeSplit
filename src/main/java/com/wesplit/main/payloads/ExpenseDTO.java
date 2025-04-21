@@ -25,4 +25,6 @@ public class ExpenseDTO {
     private BigDecimal user2paid;
     private BigDecimal user1owe;
     private BigDecimal user2owe;
+    @NotNull(message = "field must not be blank")
+    private String currency;
 }

@@ -17,4 +17,5 @@ public class ExpenseResponseDTO {
     private LocalDate createdAt;
     private ExpenseType expenseType;
     private Boolean settled;
+    private String currency;
 }
