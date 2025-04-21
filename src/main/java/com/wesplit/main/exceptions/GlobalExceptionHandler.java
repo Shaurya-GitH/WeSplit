@@ -71,4 +71,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(exceptionMessage);
     }
 
+    @ExceptionHandler(ExternalAPIFailedException.class)
+    ResponseEntity<ExceptionMessage> externalAPIFailedException(ExternalAPIFailedException e){
+        ExceptionMessage message= ExceptionMessage.builder()
+                .exception(e.getMessage())
+                .exceptionType("ExternalAPIFailedException")
+                .build();
+        return  ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(message);
+    }
+
 }

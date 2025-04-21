@@ -71,7 +71,7 @@ public class PaymentServiceImpl implements PaymentService{
             payment.setPaidTo(user2);
             paymentRepository.save(payment);
             //updating balance
-            Boolean settled= balanceService.updatePaymentBalance(user1,user2,paymentDTO.getAmountPaid());
+            Boolean settled= balanceService.updatePaymentBalance(user1,user2,paymentDTO.getAmountPaid(),paymentDTO.getCurrency());
             if(settled){
                 expenseService.settleExpenses(user1,user2);
             }

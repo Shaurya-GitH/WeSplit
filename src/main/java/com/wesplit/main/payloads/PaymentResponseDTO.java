@@ -15,4 +15,5 @@ public class PaymentResponseDTO {
     private BigDecimal amountPaid;
     private FriendDTO paidBy;
     private FriendDTO paidTo;
+    private String currency;
 }

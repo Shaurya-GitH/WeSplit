@@ -20,6 +20,7 @@ import java.util.List;
 public class ExpenseController {
     private final ExpenseSplitService expenseSplitService;
     private final ExpenseService expenseService;
+
     @Autowired
     ExpenseController(ExpenseService expenseService, ExpenseSplitService expenseSplitService){
         this.expenseService=expenseService;

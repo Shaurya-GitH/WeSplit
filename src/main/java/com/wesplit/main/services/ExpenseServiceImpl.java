@@ -70,6 +70,7 @@ public class ExpenseServiceImpl implements ExpenseService{
         }
 
         //method logic
+        String currency=expenseDTO.getCurrency();
         User user1= userService.getUser(userEmail1);
         User user2=userService.getUser(userEmail2);
         Expense expense=this.expenseDTOToExpense(expenseDTO);
@@ -95,7 +96,7 @@ public class ExpenseServiceImpl implements ExpenseService{
                     .user(user2)
                     .build();
             //updating the balance
-            settled= balanceService.updateExpenseBalance(user1,user2,half.negate());
+            settled= balanceService.updateExpenseBalance(user1,user2,half.negate(),currency);
 
         }
         else if(expenseType.equals(ExpenseType.SPLIT_EQUALLY_PAIDBY_USER2)){
@@ -113,7 +114,7 @@ public class ExpenseServiceImpl implements ExpenseService{
                     .user(user2)
                     .build();
             //updating the balance
-            settled= balanceService.updateExpenseBalance(user1,user2,half);
+            settled= balanceService.updateExpenseBalance(user1,user2,half,currency);
 
         }
         else if(expenseType.equals(ExpenseType.OWED_USER1)){
@@ -132,7 +133,7 @@ public class ExpenseServiceImpl implements ExpenseService{
                     .user(user2)
                     .build();
             //updating the balance
-             settled= balanceService.updateExpenseBalance(user1,user2,amount.negate());
+             settled= balanceService.updateExpenseBalance(user1,user2,amount.negate(),currency);
 
         }
         else if (expenseType.equals(ExpenseType.OWED_USER2)) {
@@ -151,7 +152,7 @@ public class ExpenseServiceImpl implements ExpenseService{
                     .user(user2)
                     .build();
             //updating the balance
-            settled= balanceService.updateExpenseBalance(user1,user2,amount);
+            settled= balanceService.updateExpenseBalance(user1,user2,amount,currency);
 
         }
         else if(expense.getExpenseType().equals(ExpenseType.CUSTOM)){
@@ -176,7 +177,7 @@ public class ExpenseServiceImpl implements ExpenseService{
                          .build();
             //updating the balance
             BigDecimal owed= user1owe.subtract(user1paid);
-            settled= balanceService.updateExpenseBalance(user1,user2,owed);
+            settled= balanceService.updateExpenseBalance(user1,user2,owed,currency);
         }
         else{
             throw new InvalidInputException("ExpenseType",expense.getExpenseType()+"");
