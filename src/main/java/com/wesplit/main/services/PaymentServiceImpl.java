@@ -7,7 +7,6 @@ import com.wesplit.main.exceptions.TooManyRequestsException;
 import com.wesplit.main.exceptions.TransactionFailedException;
 import com.wesplit.main.payloads.PaymentDTO;
 import com.wesplit.main.payloads.PaymentResponseDTO;
-import com.wesplit.main.payloads.ThrottlePOJO;
 import com.wesplit.main.repositories.PaymentRepository;
 import com.wesplit.main.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;

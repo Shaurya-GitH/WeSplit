@@ -27,6 +27,7 @@
 
 ### Caching using Redis
 - Used NoSQL database **Redis** for caching of data which require heavy SQL queries and accessed frequently reducing time to as low as **10ms**
+- API rate limiting using Redis 
 
 ###  API Documentation
 - Integrated **Swagger UI** for easy visualization and testing of endpoints.
@@ -37,7 +38,7 @@
 
 -  **Activity Feed** using **Kafka**
 -  Integrating API for **currency** conversion
--  **Notification System** for expenses & settlements
+-  **Notification System** for expenses & settlements using websockets
 -  **Group Settlement Logic**
 -  **Test Coverage** using JUnit & Mockito
 
