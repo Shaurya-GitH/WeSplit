@@ -58,4 +58,4 @@ A development log to track daily progress, ideas, bugs, and reflections while bu
 
 - ✅ Integrated external API for currency conversion
 - ✅ Automated currency conversion by making it possible to pay in any currency
-- ✅ Shifted my entire workspace from windows to **linux** using WSL
+- ✅ Shifted my entire workspace from windows to **linux** using **WSL**
