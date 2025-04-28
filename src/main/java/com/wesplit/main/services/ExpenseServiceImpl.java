@@ -69,6 +69,11 @@ public class ExpenseServiceImpl implements ExpenseService{
             redisTemplate.expire(userEmail1+"_createExpense",60L, TimeUnit.SECONDS);
         }
 
+        //checking if value is negative
+        if(expenseDTO.getAmount().compareTo(BigDecimal.ZERO)<0){
+            throw new InvalidInputException("Amount less than","0");
+        }
+
         //method logic
         String currency=expenseDTO.getCurrency();
         User user1= userService.getUser(userEmail1);

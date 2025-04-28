@@ -26,9 +26,11 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http.authorizeHttpRequests((auth)->{
                     auth.requestMatchers("/api/public/**").permitAll()
-                            .requestMatchers("/v3/api-docs").permitAll()
-                            .requestMatchers("/swagger-ui/**").permitAll()
-                            .anyRequest().authenticated();
+                            .requestMatchers("/api/expense/**").hasRole("USER")
+                            .requestMatchers("/api/payment/**").hasRole("USER")
+                            .requestMatchers("/api/balance/**").hasRole("USER")
+                            .requestMatchers("/api/user/**").hasRole("USER")
+                            .anyRequest().permitAll();
                 })
                 .sessionManagement((session)->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf((csrf)->csrf.disable())

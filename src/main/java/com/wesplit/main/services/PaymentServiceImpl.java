@@ -15,6 +15,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -59,6 +60,12 @@ public class PaymentServiceImpl implements PaymentService{
         else{
             redisTemplate.opsForValue().increment(email1+"_createPayment");
             redisTemplate.expire(email1+"_createPayment",60L, TimeUnit.SECONDS);
+        }
+
+
+        //checking if value is negative
+        if(paymentDTO.getAmountPaid().compareTo(BigDecimal.ZERO)<0){
+            throw new InvalidInputException("Amount less than","0");
         }
 
         //method logic
