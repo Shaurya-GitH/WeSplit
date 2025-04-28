@@ -59,3 +59,20 @@ A development log to track daily progress, ideas, bugs, and reflections while bu
 - ✅ Integrated external API for currency conversion
 - ✅ Automated currency conversion by making it possible to pay in any currency
 - ✅ Shifted my entire workspace from windows to **linux** using **WSL**
+
+## 🗓️ 2025-04-29
+
+- ✅ Learned and planned on decoupling the monolithic structure into microservices
+- ✅ Developed algorithm for group debt settlement in minimal cash flow
+- ✅ Added checks for not allowing negative values as payment or expense
+- ✅ Made the security authorization role based
+
+## Future plan for the project
+
+- I will be starting work on the frontend using ReactJS on the weekdays
+- I will work on the backend in the weekends
+
+### Backend work to be done: 
+- Adding group service
+- Start the decoupling by separating balance and group service using Event driven architecture through Apache kafka
+
