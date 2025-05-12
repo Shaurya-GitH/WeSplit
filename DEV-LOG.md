@@ -67,6 +67,10 @@ A development log to track daily progress, ideas, bugs, and reflections while bu
 - ✅ Added checks for not allowing negative values as payment or expense
 - ✅ Made the security authorization role based
 
+## 🗓️ 2025-05-12
+
+- ✅ Added query optimization using DTO projection custom query
+ 
 ## Future plan for the project
 
 - I will be starting work on the frontend using ReactJS on the weekdays
