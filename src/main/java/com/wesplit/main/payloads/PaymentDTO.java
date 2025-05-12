@@ -1,6 +1,7 @@
 package com.wesplit.main.payloads;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,7 +13,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PaymentDTO {
-    @NotNull
+    @Null
     private LocalDate createdAt;
     @NotNull
     private BigDecimal amountPaid;

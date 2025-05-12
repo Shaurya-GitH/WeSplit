@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -196,6 +197,7 @@ public class ExpenseServiceImpl implements ExpenseService{
         newList.add(expenseSplit1);
         newList.add(expenseSplit2);
         expense.setSplitList(newList);
+        expense.setCreatedAt(LocalDate.now());
         if(settled!=null && settled){
             expense.setSettled(settled);
         }

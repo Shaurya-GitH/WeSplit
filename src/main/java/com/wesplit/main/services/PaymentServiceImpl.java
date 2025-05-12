@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -74,6 +75,7 @@ public class PaymentServiceImpl implements PaymentService{
             //saving payment object
             payment.setPaidBy(user1);
             payment.setPaidTo(user2);
+            payment.setCreatedAt(LocalDate.now());
             paymentRepository.save(payment);
             //updating balance
             Boolean settled= balanceService.updatePaymentBalance(user1,user2,paymentDTO.getAmountPaid(),paymentDTO.getCurrency());

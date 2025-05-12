@@ -2,6 +2,7 @@ package com.wesplit.main.payloads;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,7 +18,7 @@ public class ExpenseDTO {
     private String description;
     @NotNull(message = "field must not be blank")
     private BigDecimal amount;
-    @NotNull(message = "field must not be blank")
+    @Null
     private LocalDate createdAt;
     @NotNull(message = "field must not be blank")
     private ExpenseType expenseType;
