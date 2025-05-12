@@ -70,6 +70,7 @@ A development log to track daily progress, ideas, bugs, and reflections while bu
 ## 🗓️ 2025-05-12
 
 - ✅ Added query optimization using DTO projection custom query
+- ✅ Added lazy loading to List of friends in FriendList
  
 ## Future plan for the project
 

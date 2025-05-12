@@ -21,7 +21,7 @@ public class FriendList {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(referencedColumnName = "userId",name = "user_id")
     private User user;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             joinColumns = @JoinColumn(name="friendlist_id", referencedColumnName = "friendListId"),
             inverseJoinColumns = @JoinColumn(name="friend_id",referencedColumnName = "userId")

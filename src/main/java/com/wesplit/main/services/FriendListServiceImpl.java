@@ -1,15 +1,13 @@
 package com.wesplit.main.services;
 
-import com.wesplit.main.entities.FriendList;
 import com.wesplit.main.entities.User;
 import com.wesplit.main.payloads.FriendDTO;
 import com.wesplit.main.repositories.FriendListRepository;
 import com.wesplit.main.utils.RedisUtil;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class FriendListServiceImpl implements FriendListService{
@@ -21,6 +19,7 @@ public class FriendListServiceImpl implements FriendListService{
         this.userService=userService;
         this.redisUtil = redisUtil;
     }
+    @Transactional
     @Override
     public List<FriendDTO> getAllFriends(String email) {
         List<FriendDTO> cache= redisUtil.getListValue(email+"_friends",FriendDTO.class);
