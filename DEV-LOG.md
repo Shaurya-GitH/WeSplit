@@ -71,7 +71,14 @@ A development log to track daily progress, ideas, bugs, and reflections while bu
 
 - ✅ Added query optimization using DTO projection custom query
 - ✅ Added lazy loading to List of friends in FriendList
- 
+
+## 🗓️ 2025-05-12
+
+- ✅ Added Groups entity,Repository,Service and Controller layers
+- ✅ Added addGroup functionality with endpoint API
+- ✅ Designed all the GroupService endpoints
+- ✅ used nmap,ping and mtr commands to troubleshoot external API not responding
+
 ## Future plan for the project
 
 - I will be starting work on the frontend using ReactJS on the weekdays
