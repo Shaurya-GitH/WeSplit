@@ -24,18 +24,16 @@ import java.util.concurrent.TimeUnit;
 public class PaymentServiceImpl implements PaymentService{
     private final BalanceService balanceService;
     private final ExpenseService expenseService;
-    private final RedisUtil redisUtil;
     private final RedisTemplate<Object, Object> redisTemplate;
     PaymentRepository paymentRepository;
     UserService userService;
     ModelMapper modelMapper;
-    PaymentServiceImpl(PaymentRepository paymentRepository, UserService userService, ModelMapper modelMapper, BalanceService balanceService, ExpenseService expenseService, RedisUtil redisUtil, RedisTemplate<Object, Object> redisTemplate){
+    PaymentServiceImpl(PaymentRepository paymentRepository, UserService userService, ModelMapper modelMapper, BalanceService balanceService, ExpenseService expenseService, RedisTemplate<Object, Object> redisTemplate){
         this.paymentRepository=paymentRepository;
         this.userService=userService;
         this.modelMapper=modelMapper;
         this.balanceService = balanceService;
         this.expenseService = expenseService;
-        this.redisUtil = redisUtil;
         this.redisTemplate = redisTemplate;
     }
     @Transactional
