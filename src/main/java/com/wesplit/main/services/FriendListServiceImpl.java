@@ -29,8 +29,7 @@ public class FriendListServiceImpl implements FriendListService{
         }
         else{
             User user= userService.getUser(email);
-            FriendList friendList=friendListRepository.findByUser(user).get();
-            List<FriendDTO> list= friendList.getFriends().stream().map(friend ->userService.userToFriendDTO(friend)).toList();
+            List<FriendDTO> list=friendListRepository.getByUser(user) ;
             redisUtil.setValue(email+"_friends",list,300L);
             return list;
         }
