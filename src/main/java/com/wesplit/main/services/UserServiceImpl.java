@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO registerUser(UserDTO userDTO) {
+    public FriendDTO registerUser(UserDTO userDTO) {
 
         try{
             User user=this.userDtoToUser(userDTO);
@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
             list.add("USER");
             user.setRoles(list);
             User newUser= userRepository.save(user);
-            return this.userToUserDto(newUser);
+            return this.userToFriendDTO(newUser);
         }
         //if user is already in the record
         catch (DataIntegrityViolationException e){
@@ -112,7 +112,7 @@ public class UserServiceImpl implements UserService {
             }
             else{
                 //creating a balance record between the friends
-                balanceService.addNewBalance(friendUser.get(),loggedUser);
+                balanceService.addNewBalance(friendUser.get(),loggedUser,null);
                 friendList.add(friendUser.get());
                 FriendList newList= loggedUser.getFriendList();
                 newList.setFriends(friendList);
@@ -130,7 +130,7 @@ public class UserServiceImpl implements UserService {
             try {
                 User newUser = userRepository.save(user);
                 //creating a balance record between the friends
-                balanceService.addNewBalance(loggedUser, newUser);
+                balanceService.addNewBalance(loggedUser, newUser,null);
                 //adding the friend to the friend-list
                 List<User> friendList = loggedUser.getFriendList().getFriends();
                 friendList.add(newUser);

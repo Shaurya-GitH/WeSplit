@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 
 @Service
 public interface BalanceService {
-    void addNewBalance(User user1, User user2);
+    void addNewBalance(User user1, User user2,Long groupId);
     Boolean updateExpenseBalance(User user1, User user2, BigDecimal intialOwed,String currency);
     Boolean updatePaymentBalance(User user1, User user2, BigDecimal initialPaid,String currency);
     BalanceDTO getBalance(User user1, User user2,String currency);

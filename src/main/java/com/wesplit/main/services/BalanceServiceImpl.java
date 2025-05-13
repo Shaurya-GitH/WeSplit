@@ -27,17 +27,22 @@ public class BalanceServiceImpl implements BalanceService {
 
     @Transactional
     @Override
-    public void addNewBalance(User user1, User user2) {
+    public void addNewBalance(User user1, User user2,Long groupId) {
         boolean exists;
         //checking if the balance is already created
-       if(balanceRepository.findByUser1AndUser2(user1,user2).isEmpty()){
-           if(balanceRepository.findByUser1AndUser2(user2,user1).isEmpty())exists=false;
-           else{
-               exists=true;
-           }
-       }
-       else exists=true;
-       //creating a new balance if not already created
+        if(groupId!=null){
+            exists=false;
+        }
+        else{
+            if(balanceRepository.findByUser1AndUser2(user1,user2).isEmpty()){
+                if(balanceRepository.findByUser1AndUser2(user2,user1).isEmpty())exists=false;
+                else{
+                    exists=true;
+                }
+            }
+            else exists=true;
+        }
+        //creating a new balance if not already created
        if(!exists){
            Balance newBalance= Balance.builder()
                            .oneOweTwo(BigDecimal.ZERO)
@@ -45,6 +50,9 @@ public class BalanceServiceImpl implements BalanceService {
                            .user1(user1)
                            .user2(user2)
                            .build();
+           if(groupId!=null){
+               newBalance.setGroupId(groupId);
+           }
            try{
                balanceRepository.save(newBalance);
            } catch (Exception e) {

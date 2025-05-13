@@ -22,7 +22,7 @@ public class BalanceController {
 
     //API getBalance
     @GetMapping("/{user2Email}")
-    ResponseEntity<BalanceDTO> getBalance(@PathVariable String user2Email, @CookieValue(value = "currency",defaultValue = "INR") String currency){
+    ResponseEntity<BalanceDTO> getBalance(@PathVariable("user2Email") String user2Email, @CookieValue(value = "currency",defaultValue = "INR") String currency){
         String user1Email= SecurityContextHolder.getContext().getAuthentication().getName();
         User user1= userService.getUser(user1Email);
         User user2= userService.getUser(user2Email);
