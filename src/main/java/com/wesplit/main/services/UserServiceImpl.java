@@ -84,7 +84,7 @@ public class UserServiceImpl implements UserService {
                 friendUser.setLastName(user.getLastName());
                 try{
                     User newUser= userRepository.save(friendUser);
-                    return this.userToUserDto(newUser);
+                    return this.userToFriendDTO(newUser);
                 } catch (Exception ex) {
                     log.error(ex.getMessage());
                     throw new TransactionFailedException("Failed to save friend as a user");
