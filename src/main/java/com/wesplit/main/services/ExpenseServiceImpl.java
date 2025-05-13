@@ -206,6 +206,8 @@ public class ExpenseServiceImpl implements ExpenseService{
         }
         try{
             expenseRepository.save(expense);
+            //invalidating cache
+            redisTemplate.delete(user1.getEmail()+"_"+user2.getEmail()+"_s_expenses");
             return this.expenseToExpenseResponseDTO(expense);
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -262,6 +264,8 @@ public class ExpenseServiceImpl implements ExpenseService{
                 expense.setSettled(true);
                 expenseRepository.save(expense);
             });
+            //invalidating cache
+            redisTemplate.delete(user1.getEmail()+"_"+user2.getEmail()+"_s_expenses");
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new TransactionFailedException("failed to settle expenses");

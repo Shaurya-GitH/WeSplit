@@ -26,6 +26,7 @@ public class Expense {
     private LocalDate createdAt;
     private ExpenseType expenseType;
     private Boolean settled;
+    private Long groupId;
     @Column(nullable = false)
     private String currency;
 

@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,12 +30,15 @@ public class UserServiceImpl implements UserService {
     final private ModelMapper modelMapper;
     final private BalanceService balanceService;
     final private PasswordEncoder passwordEncoder;
+    private final RedisTemplate<Object, Object> redisTemplate;
+
     @Autowired
-    UserServiceImpl(UserRepository userRepository,ModelMapper modelMapper,BalanceService balanceService,PasswordEncoder passwordEncoder){
+    UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper, BalanceService balanceService, PasswordEncoder passwordEncoder, RedisTemplate<Object, Object> redisTemplate){
         this.userRepository=userRepository;
         this.modelMapper=modelMapper;
         this.balanceService=balanceService;
         this.passwordEncoder=passwordEncoder;
+        this.redisTemplate = redisTemplate;
     }
 
     @Override
@@ -138,6 +142,8 @@ public class UserServiceImpl implements UserService {
                 newList.setFriends(friendList);
                 loggedUser.setFriendList(newList);
                 userRepository.save(loggedUser);
+                //invalidating cache
+                redisTemplate.delete(email+"_friends");
                 return this.userToFriendDTO(newUser);
             }
             catch (Exception e){
