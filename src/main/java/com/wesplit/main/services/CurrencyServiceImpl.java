@@ -16,6 +16,11 @@ import java.math.BigDecimal;
 
 @Service
 public class CurrencyServiceImpl implements CurrencyService{
+
+    //balances are stored in INR
+    //balances are displayed in the preferred currency using cookies
+    //expenses are saved and displayed in the original currency
+
     RestTemplate restTemplate;
 
     @Autowired

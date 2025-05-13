@@ -72,7 +72,7 @@ A development log to track daily progress, ideas, bugs, and reflections while bu
 - ✅ Added query optimization using DTO projection custom query
 - ✅ Added lazy loading to List of friends in FriendList
 
-## 🗓️ 2025-05-12
+## 🗓️ 2025-05-13
 
 - ✅ Added Groups entity,Repository,Service and Controller layers
 - ✅ Added addGroup functionality with endpoint API
