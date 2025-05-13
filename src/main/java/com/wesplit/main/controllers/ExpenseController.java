@@ -3,8 +3,10 @@ package com.wesplit.main.controllers;
 import com.wesplit.main.payloads.ExpenseDTO;
 import com.wesplit.main.payloads.ExpenseResponseDTO;
 import com.wesplit.main.payloads.ExpenseSplitDTO;
+import com.wesplit.main.payloads.GroupExpenseDTO;
 import com.wesplit.main.services.ExpenseService;
 import com.wesplit.main.services.ExpenseSplitService;
+import com.wesplit.main.services.GroupExpenseService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,11 +22,13 @@ import java.util.List;
 public class ExpenseController {
     private final ExpenseSplitService expenseSplitService;
     private final ExpenseService expenseService;
+    private final GroupExpenseService groupExpenseService;
 
     @Autowired
-    ExpenseController(ExpenseService expenseService, ExpenseSplitService expenseSplitService){
+    ExpenseController(ExpenseService expenseService, ExpenseSplitService expenseSplitService, GroupExpenseService groupExpenseService){
         this.expenseService=expenseService;
         this.expenseSplitService = expenseSplitService;
+        this.groupExpenseService = groupExpenseService;
     }
     //API addExpense
     @PostMapping("/create-solo/{user2Email}")
@@ -55,5 +59,12 @@ public class ExpenseController {
     ResponseEntity<List<ExpenseSplitDTO>> getExpenseSplits(@PathVariable Long expenseId){
         List<ExpenseSplitDTO> list=expenseSplitService.getExpenseSplits(expenseId);
         return ResponseEntity.ok().body(list);
+    }
+
+    //API addGroupExpense
+    @PostMapping("/create-group")
+    ResponseEntity<?> addGroupExpense(@Valid @RequestBody GroupExpenseDTO groupExpenseDTO){
+        ExpenseResponseDTO expenseResponseDTO=groupExpenseService.createGroupExpense(groupExpenseDTO);
+        return ResponseEntity.ok().body(expenseResponseDTO);
     }
 }

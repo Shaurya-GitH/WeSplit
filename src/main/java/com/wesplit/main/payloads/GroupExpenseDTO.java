@@ -23,6 +23,10 @@ public class GroupExpenseDTO {
     private LocalDate createdAt;
     @NotNull(message = "field must not be blank")
     private String currency;
+    @NotNull
+    private Long groupId;
+    @NotNull
     private HashMap<String,BigDecimal> payments;
+    @NotNull
     private HashMap<String,BigDecimal> owe;
 }
