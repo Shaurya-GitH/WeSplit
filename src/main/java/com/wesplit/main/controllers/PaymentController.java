@@ -20,7 +20,7 @@ public class PaymentController {
     }
     //API createPayment
     @PostMapping("/create/{user2Email}")
-    ResponseEntity<?> createPayment(@Valid @RequestBody PaymentDTO paymentDTO, @PathVariable String user2Email){
+    ResponseEntity<?> createPayment(@Valid @RequestBody PaymentDTO paymentDTO, @PathVariable("user2Email") String user2Email){
         Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
         paymentService.createPayment(paymentDTO, authentication.getName(),user2Email);
         return ResponseEntity.ok().build();
@@ -28,7 +28,7 @@ public class PaymentController {
 
     //API getPayments
     @GetMapping("/{user2Email}")
-    ResponseEntity<List<PaymentResponseDTO>> getAllPayments(@PathVariable String user2Email){
+    ResponseEntity<List<PaymentResponseDTO>> getAllPayments(@PathVariable("user2Email") String user2Email){
         Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
         List<PaymentResponseDTO> list= paymentService.getPayments(authentication.getName(),user2Email);
         return ResponseEntity.ok().body(list);

@@ -1,34 +1,41 @@
 package com.wesplit.main.services;
 
+import com.wesplit.main.entities.Balance;
 import com.wesplit.main.entities.Expense;
 import com.wesplit.main.entities.ExpenseSplit;
 import com.wesplit.main.entities.User;
 import com.wesplit.main.exceptions.InvalidInputException;
+import com.wesplit.main.exceptions.TransactionFailedException;
 import com.wesplit.main.payloads.ExpenseResponseDTO;
-import com.wesplit.main.payloads.ExpenseType;
 import com.wesplit.main.payloads.GroupExpenseDTO;
-import org.modelmapper.ModelMapper;
+import com.wesplit.main.repositories.BalanceRepository;
+import com.wesplit.main.repositories.ExpenseRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
+@Slf4j
 @Service
 public class GroupExpenseServiceImpl implements GroupExpenseService{
     private final UserService userService;
-    private final ModelMapper modelMapper;
     private final ExpenseService expenseService;
+    private final BalanceRepository balanceRepository;
+    private final BalanceService balanceService;
+    private final ExpenseRepository expenseRepository;
 
-    public GroupExpenseServiceImpl(UserService userService, ModelMapper modelMapper, ExpenseService expenseService) {
+    public GroupExpenseServiceImpl(UserService userService,ExpenseService expenseService, BalanceRepository balanceRepository, BalanceService balanceService, ExpenseRepository expenseRepository) {
         this.userService = userService;
-        this.modelMapper=modelMapper;
         this.expenseService = expenseService;
+        this.balanceRepository = balanceRepository;
+        this.balanceService = balanceService;
+        this.expenseRepository = expenseRepository;
     }
 
+    @Transactional
     @Override
     public ExpenseResponseDTO createGroupExpense(GroupExpenseDTO groupExpenseDTO) {
         //checking if payments are equal to amount
@@ -61,19 +68,61 @@ public class GroupExpenseServiceImpl implements GroupExpenseService{
         }
         expense.setSplitList(expenseSplitList);
         expense.setCreatedAt(LocalDate.now());
-        expense.setExpenseType(ExpenseType.GROUP);
-        HashMap<User,BigDecimal> finalDebtTable= this.createDebtTable(keyset,debt);
+//        expense.setExpenseType(ExpenseType.GROUP);
+        HashMap<User,BigDecimal> groupDebtTable= this.createDebtTable(groupExpenseDTO.getGroupId());
+        balanceService.updateGroupBalance(groupDebtTable,debt,groupExpenseDTO.getCurrency(),groupExpenseDTO.getGroupId());
+        try{
+            expenseRepository.save(expense);
+        }
+        catch (Exception e){
+            log.error(e.getMessage());
+            throw new TransactionFailedException("failed to save group expense");
+        }
         return expenseService.expenseToExpenseResponseDTO(expense);
     }
 
+    //helper method
     @Override
-    public HashMap<User, BigDecimal> createDebtTable(Set<String> keyset, HashMap<User, BigDecimal> debt) {
-
-        return null;
+    public HashMap<User, BigDecimal> createDebtTable(Long groupId) {
+        List<Balance> balances= balanceRepository.findByGroupId(groupId);
+        HashMap<User,Integer> indexes= new HashMap<>();
+        HashSet<User> users=new HashSet<>();
+        for(Balance balance:balances){
+            users.add(balance.getUser1());
+            users.add(balance.getUser2());
+        }
+        BigDecimal[][] debtGraph =new BigDecimal[users.size()][users.size()];
+        int i=0;
+        for(User user:users){
+            indexes.put(user,i);
+            debtGraph[i][i]=BigDecimal.ZERO;
+            i++;
+        }
+        for(Balance balance:balances){
+            debtGraph[indexes.get(balance.getUser1())][indexes.get(balance.getUser2())]=balance.getOneOweTwo();
+            debtGraph[indexes.get(balance.getUser2())][indexes.get(balance.getUser1())]=balance.getTwoOweOne();
+        }
+        HashMap<User,BigDecimal> finalDebt=new HashMap<>();
+        for(User user:users){
+           Integer index= indexes.get(user);
+            BigDecimal net=BigDecimal.ZERO;
+           for(int j=0;j< users.size();j++){
+               net= net.add(debtGraph[index][j]);
+               net=net.subtract(debtGraph[j][index]);
+           }
+           finalDebt.put(user,net);
+        }
+        return finalDebt;
     }
 
     @Override
     public Expense groupExpenseDTOtoExpense(GroupExpenseDTO groupExpenseDTO) {
-        return modelMapper.map(groupExpenseDTO,Expense.class);
+        return Expense.builder()
+                .description(groupExpenseDTO.getDescription())
+                .amount(groupExpenseDTO.getAmount())
+                .currency(groupExpenseDTO.getCurrency())
+                .settled(Boolean.FALSE)
+                .groupId(groupExpenseDTO.getGroupId())
+                .build();
     }
 }

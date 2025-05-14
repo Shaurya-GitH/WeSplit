@@ -32,7 +32,7 @@ public class ExpenseController {
     }
     //API addExpense
     @PostMapping("/create-solo/{user2Email}")
-    ResponseEntity<ExpenseResponseDTO> createExpense(@Valid @RequestBody ExpenseDTO expenseDTO, @PathVariable String user2Email){
+    ResponseEntity<ExpenseResponseDTO> createExpense(@Valid @RequestBody ExpenseDTO expenseDTO, @PathVariable("user2Email") String user2Email){
        Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
        ExpenseResponseDTO newExpense= expenseService.createExpense(expenseDTO,authentication.getName(),user2Email);
         return ResponseEntity.status(HttpStatus.CREATED).body(newExpense);
@@ -40,7 +40,7 @@ public class ExpenseController {
 
     //API getUnsettledExpenses
     @GetMapping("/unsettled/{user2Email}")
-    ResponseEntity<List<ExpenseResponseDTO>> getUnsettledExpenses(@PathVariable String user2Email){
+    ResponseEntity<List<ExpenseResponseDTO>> getUnsettledExpenses(@PathVariable("user2Email") String user2Email){
        Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
        List<ExpenseResponseDTO> list= expenseService.getUnsettledExpenses(authentication.getName(),user2Email);
        return ResponseEntity.ok().body(list);
@@ -48,7 +48,7 @@ public class ExpenseController {
 
     //API getSettledExpenses
     @GetMapping("/settled/{userEmail2}")
-    ResponseEntity<List<ExpenseResponseDTO>> getSettledExpenses(@PathVariable String userEmail2){
+    ResponseEntity<List<ExpenseResponseDTO>> getSettledExpenses(@PathVariable("userEmail2") String userEmail2){
         Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
         List<ExpenseResponseDTO> list= expenseService.getSettledExpenses(authentication.getName(),userEmail2);
         return ResponseEntity.ok().body(list);
@@ -56,7 +56,7 @@ public class ExpenseController {
 
     //API getExpenseSplits
     @GetMapping("/splits/{expenseId}")
-    ResponseEntity<List<ExpenseSplitDTO>> getExpenseSplits(@PathVariable Long expenseId){
+    ResponseEntity<List<ExpenseSplitDTO>> getExpenseSplits(@PathVariable("expenseId") Long expenseId){
         List<ExpenseSplitDTO> list=expenseSplitService.getExpenseSplits(expenseId);
         return ResponseEntity.ok().body(list);
     }

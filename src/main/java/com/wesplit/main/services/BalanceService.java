@@ -6,6 +6,7 @@ import com.wesplit.main.payloads.BalanceDTO;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 
 @Service
 public interface BalanceService {
@@ -14,4 +15,5 @@ public interface BalanceService {
     Boolean updatePaymentBalance(User user1, User user2, BigDecimal initialPaid,String currency);
     BalanceDTO getBalance(User user1, User user2,String currency);
     BalanceDTO balanceToBalanceDTO(Balance balance);
+    void updateGroupBalance(HashMap<User,BigDecimal> groupDebtTable,HashMap<User,BigDecimal> debt,String currency,Long groupId);
 }

@@ -14,5 +14,5 @@ import java.util.Set;
 public interface GroupExpenseService {
     ExpenseResponseDTO createGroupExpense(GroupExpenseDTO groupExpenseDTO);
     Expense groupExpenseDTOtoExpense(GroupExpenseDTO groupExpenseDTO);
-    HashMap<User, BigDecimal> createDebtTable(Set<String> keyset, HashMap<User, BigDecimal> debt);
+    HashMap<User, BigDecimal> createDebtTable(Long groupId);
 }

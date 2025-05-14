@@ -4,6 +4,7 @@ import com.wesplit.main.entities.Balance;
 import com.wesplit.main.entities.User;
 import com.wesplit.main.exceptions.TransactionFailedException;
 import com.wesplit.main.payloads.BalanceDTO;
+import com.wesplit.main.payloads.UserDebt;
 import com.wesplit.main.repositories.BalanceRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -11,6 +12,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.PriorityQueue;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -263,4 +268,98 @@ public class BalanceServiceImpl implements BalanceService {
     public BalanceDTO balanceToBalanceDTO(Balance balance) {
         return modelMapper.map(balance, BalanceDTO.class);
     }
+
+    @Transactional
+    @Override
+    public void updateGroupBalance(HashMap<User, BigDecimal> groupDebtTable, HashMap<User, BigDecimal> debt,String currency,Long groupId) {
+        Set<User> keyset= debt.keySet();
+        //creating net debt table
+        for(User user:keyset){
+            BigDecimal convertedDebt= currencyService.updateConversion(debt.get(user),currency);
+            groupDebtTable.put(user,groupDebtTable.get(user).add(convertedDebt));
+        }
+        //making priority queues for creditors and debtors
+        PriorityQueue<UserDebt> creditors=new PriorityQueue<>(Comparator.comparing(UserDebt::getDebt,Comparator.reverseOrder()));
+        PriorityQueue<UserDebt> debtors=new PriorityQueue<>(Comparator.comparing(UserDebt::getDebt));
+        Set<User> groupKeySet= groupDebtTable.keySet();
+        for(User user:groupKeySet){
+            BigDecimal value=groupDebtTable.get(user);
+            if(value.compareTo(BigDecimal.ZERO)==0){
+                continue;
+            }
+            else if(value.compareTo(BigDecimal.ZERO)>0){
+                UserDebt userDebt= UserDebt.builder()
+                        .user(user)
+                        .debt(value)
+                        .build();
+                debtors.add(userDebt);
+            }
+            else if(value.compareTo(BigDecimal.ZERO)<0){
+                UserDebt userDebt= UserDebt.builder()
+                        .user(user)
+                        .debt(value)
+                        .build();
+                creditors.add(userDebt);
+            }
+        }
+        //minimizing cash flow
+        while(!debtors.isEmpty() && !creditors.isEmpty()){
+            UserDebt debtor= debtors.poll();
+            UserDebt creditor= creditors.poll();
+            BigDecimal transaction= debtor.getDebt().add(creditor.getDebt());
+            //retrieve the balance record between two users
+            Balance balance= balanceRepository.findByUser1AndUser2Group(debtor.getUser(), creditor.getUser(),groupId).orElseGet(()->balanceRepository.findByUser1AndUser2Group(creditor.getUser(), debtor.getUser(),groupId).get());
+            if(balance.getUser1().equals(debtor.getUser())){
+                balance.setTwoOweOne(BigDecimal.ZERO);
+                if(transaction.compareTo(BigDecimal.ZERO)<0){
+                    balance.setOneOweTwo(debtor.getDebt());
+                    UserDebt remaining= UserDebt.builder()
+                            .user(creditor.getUser())
+                            .debt(transaction)
+                            .build();
+                    creditors.add(remaining);
+                }
+                else if(transaction.compareTo(BigDecimal.ZERO)>0){
+                    balance.setOneOweTwo(creditor.getDebt().negate());
+                    UserDebt remaining= UserDebt.builder()
+                            .user(debtor.getUser())
+                            .debt(transaction)
+                            .build();
+                    debtors.add(remaining);
+                }
+                else if(transaction.compareTo(BigDecimal.ZERO)==0){
+                    balance.setOneOweTwo(debtor.getDebt());
+                }
+            }
+            else{
+                balance.setOneOweTwo(BigDecimal.ZERO);
+                if(transaction.compareTo(BigDecimal.ZERO)<0){
+                    balance.setTwoOweOne(debtor.getDebt());
+                    UserDebt remaining= UserDebt.builder()
+                            .user(creditor.getUser())
+                            .debt(transaction)
+                            .build();
+                    creditors.add(remaining);
+                }
+                else if(transaction.compareTo(BigDecimal.ZERO)>0){
+                    balance.setTwoOweOne(creditor.getDebt().negate());
+                    UserDebt remaining= UserDebt.builder()
+                            .user(debtor.getUser())
+                            .debt(transaction)
+                            .build();
+                    debtors.add(remaining);
+                }
+                else if(transaction.compareTo(BigDecimal.ZERO)==0){
+                    balance.setTwoOweOne(debtor.getDebt());
+                }
+            }
+            try{
+                balanceRepository.save(balance);
+            }
+            catch (Exception e){
+                throw new TransactionFailedException("failed to update balance");
+            }
+        }
+    }
+
 }
