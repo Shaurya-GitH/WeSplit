@@ -284,10 +284,7 @@ public class BalanceServiceImpl implements BalanceService {
         Set<User> groupKeySet= groupDebtTable.keySet();
         for(User user:groupKeySet){
             BigDecimal value=groupDebtTable.get(user);
-            if(value.compareTo(BigDecimal.ZERO)==0){
-                continue;
-            }
-            else if(value.compareTo(BigDecimal.ZERO)>0){
+            if(value.compareTo(BigDecimal.ZERO)>0){
                 UserDebt userDebt= UserDebt.builder()
                         .user(user)
                         .debt(value)
