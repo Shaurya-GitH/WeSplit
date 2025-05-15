@@ -367,4 +367,10 @@ public class BalanceServiceImpl implements BalanceService {
         return settled;
     }
 
+    @Override
+    public List<BalanceDTO> getGroupBalance(User user, Long groupId) {
+        List<Balance> list= balanceRepository.findByGroupIdAndUser1OrUser2AndGroupId(groupId,user,user,groupId);
+        return list.stream().map(this::balanceToBalanceDTO).toList();
+    }
+
 }

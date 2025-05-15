@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 
 @Service
 public interface BalanceService {
@@ -16,4 +17,5 @@ public interface BalanceService {
     BalanceDTO getBalance(User user1, User user2,String currency);
     BalanceDTO balanceToBalanceDTO(Balance balance);
     Boolean updateGroupBalance(HashMap<User,BigDecimal> groupDebtTable,HashMap<User,BigDecimal> debt,String currency,Long groupId);
+    List<BalanceDTO> getGroupBalance(User user,Long groupId);
 }

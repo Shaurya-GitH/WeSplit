@@ -23,4 +23,6 @@ public interface BalanceRepository extends JpaRepository<Balance,Long> {
     @Query("from Balance b where b.user1=?1 and b.user2=?2 and b.groupId=?3")
     Optional<Balance> findByUser1AndUser2Group(User user1,User user2,Long groupId);
     List<Balance> findByGroupId(Long groupId);
+
+    List<Balance> findByGroupIdAndUser1OrUser2AndGroupId(Long groupId, User user1, User user2, Long groupId1);
 }
