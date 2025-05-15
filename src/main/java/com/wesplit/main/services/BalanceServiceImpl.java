@@ -12,10 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.PriorityQueue;
-import java.util.Set;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -271,7 +268,7 @@ public class BalanceServiceImpl implements BalanceService {
 
     @Transactional
     @Override
-    public void updateGroupBalance(HashMap<User, BigDecimal> groupDebtTable, HashMap<User, BigDecimal> debt,String currency,Long groupId) {
+    public Boolean updateGroupBalance(HashMap<User, BigDecimal> groupDebtTable, HashMap<User, BigDecimal> debt,String currency,Long groupId) {
         Set<User> keyset= debt.keySet();
         //creating net debt table
         for(User user:keyset){
@@ -298,6 +295,16 @@ public class BalanceServiceImpl implements BalanceService {
                         .build();
                 creditors.add(userDebt);
             }
+        }
+        Boolean settled=Boolean.FALSE;
+        if(debtors.isEmpty() && creditors.isEmpty()){
+            settled=Boolean.TRUE;
+            List<Balance> balanceList=balanceRepository.findByGroupId(groupId);
+            balanceList.stream().forEach((balance)->{
+                balance.setTwoOweOne(BigDecimal.ZERO);
+                balance.setOneOweTwo(BigDecimal.ZERO);
+            });
+            balanceRepository.saveAll(balanceList);
         }
         //minimizing cash flow
         while(!debtors.isEmpty() && !creditors.isEmpty()){
@@ -357,6 +364,7 @@ public class BalanceServiceImpl implements BalanceService {
                 throw new TransactionFailedException("failed to update balance");
             }
         }
+        return settled;
     }
 
 }

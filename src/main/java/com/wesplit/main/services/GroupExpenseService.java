@@ -15,4 +15,5 @@ public interface GroupExpenseService {
     ExpenseResponseDTO createGroupExpense(GroupExpenseDTO groupExpenseDTO);
     Expense groupExpenseDTOtoExpense(GroupExpenseDTO groupExpenseDTO);
     HashMap<User, BigDecimal> createDebtTable(Long groupId);
+    void settleGroupExpenses(Long groupId);
 }

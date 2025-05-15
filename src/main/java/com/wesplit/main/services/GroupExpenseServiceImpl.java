@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -63,14 +64,25 @@ public class GroupExpenseServiceImpl implements GroupExpenseService{
                     .build();
             expenseSplitList.add(expenseSplit);
             //making net debt hashmap
-            BigDecimal netDebt= groupExpenseDTO.getOwe().get(key).subtract(payments.get(key));
-            debt.put(user,netDebt);
+            try{
+                BigDecimal netDebt= groupExpenseDTO.getOwe().get(key).subtract(payments.get(key));
+                debt.put(user,netDebt);
+            }
+            catch (NullPointerException e){
+                log.error(e.getMessage());
+                throw new InvalidInputException("payments and owe","not matching");
+            }
+
         }
         expense.setSplitList(expenseSplitList);
         expense.setCreatedAt(LocalDate.now());
 //        expense.setExpenseType(ExpenseType.GROUP);
         HashMap<User,BigDecimal> groupDebtTable= this.createDebtTable(groupExpenseDTO.getGroupId());
-        balanceService.updateGroupBalance(groupDebtTable,debt,groupExpenseDTO.getCurrency(),groupExpenseDTO.getGroupId());
+        Boolean settled= balanceService.updateGroupBalance(groupDebtTable,debt,groupExpenseDTO.getCurrency(),groupExpenseDTO.getGroupId());
+        if (settled){
+            expense.setSettled(Boolean.TRUE);
+            this.settleGroupExpenses(groupExpenseDTO.getGroupId());
+        }
         try{
             expenseRepository.save(expense);
         }
@@ -113,6 +125,13 @@ public class GroupExpenseServiceImpl implements GroupExpenseService{
            finalDebt.put(user,net);
         }
         return finalDebt;
+    }
+
+    @Override
+    public void settleGroupExpenses(Long groupId) {
+        List<Expense> expenses= expenseRepository.findByGroupId(groupId);
+        expenses.stream().forEach((expense)->expense.setSettled(Boolean.TRUE));
+        expenseRepository.saveAll(expenses);
     }
 
     @Override
