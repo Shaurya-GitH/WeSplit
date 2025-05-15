@@ -20,6 +20,7 @@ public class GroupsController {
         this.groupsService=groupsService;
     }
 
+    //API createGroup
     @PostMapping("/create/{groupName}")
     ResponseEntity<GroupDTO> addGroup(@PathVariable("groupName")String groupName){
         Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
@@ -28,9 +29,18 @@ public class GroupsController {
         return ResponseEntity.status(HttpStatus.CREATED).body(groupDTO);
     }
 
+    //API addMember
     @PostMapping("/add/{groupId}")
     ResponseEntity<?> addMember(@RequestBody List<String> emails,@PathVariable("groupId") Long groupId){
         List<FriendDTO> members= groupsService.addMembers(emails,groupId);
         return ResponseEntity.status(HttpStatus.OK).body(members);
+    }
+
+    //API getGroups
+    @GetMapping("/")
+    ResponseEntity<List<GroupDTO>> getGroups(){
+        Authentication authentication=SecurityContextHolder.getContext().getAuthentication();
+        List<GroupDTO> groups=groupsService.getGroups(authentication.getName());
+        return ResponseEntity.ok().body(groups);
     }
 }

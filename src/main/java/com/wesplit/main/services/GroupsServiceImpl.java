@@ -93,4 +93,11 @@ public class GroupsServiceImpl implements GroupsService{
             }
         }
     }
+
+    @Override
+    public List<GroupDTO> getGroups(String email) {
+        User user= userService.getUser(email);
+        List<Groups> groups=groupsRepository.findAllByMembers(user);
+        return groups.stream().map(this::groupToGroupDTO).toList();
+    }
 }

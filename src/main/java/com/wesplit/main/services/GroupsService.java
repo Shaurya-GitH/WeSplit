@@ -14,4 +14,5 @@ public interface GroupsService {
     GroupDTO groupToGroupDTO(Groups groups);
     List<FriendDTO> addMembers(List<String> emails,Long groupId);
     void createBalances(List<User> members,List<User> newMembers,Long groupId);
+    List<GroupDTO> getGroups(String email);
 }
