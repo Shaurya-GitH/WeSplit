@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -18,4 +19,5 @@ public class ExpenseResponseDTO {
     private ExpenseType expenseType;
     private Boolean settled;
     private String currency;
+    private List<ExpenseSplitDTO> splitList;
 }

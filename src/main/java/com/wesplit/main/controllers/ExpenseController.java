@@ -1,5 +1,6 @@
 package com.wesplit.main.controllers;
 
+import com.wesplit.main.entities.Expense;
 import com.wesplit.main.payloads.ExpenseDTO;
 import com.wesplit.main.payloads.ExpenseResponseDTO;
 import com.wesplit.main.payloads.ExpenseSplitDTO;
@@ -54,17 +55,25 @@ public class ExpenseController {
         return ResponseEntity.ok().body(list);
     }
 
-    //API getExpenseSplits
-    @GetMapping("/splits/{expenseId}")
-    ResponseEntity<List<ExpenseSplitDTO>> getExpenseSplits(@PathVariable("expenseId") Long expenseId){
-        List<ExpenseSplitDTO> list=expenseSplitService.getExpenseSplits(expenseId);
-        return ResponseEntity.ok().body(list);
-    }
-
     //API addGroupExpense
     @PostMapping("/create-group")
-    ResponseEntity<?> addGroupExpense(@Valid @RequestBody GroupExpenseDTO groupExpenseDTO){
+    ResponseEntity<ExpenseResponseDTO> addGroupExpense(@Valid @RequestBody GroupExpenseDTO groupExpenseDTO){
         ExpenseResponseDTO expenseResponseDTO=groupExpenseService.createGroupExpense(groupExpenseDTO);
         return ResponseEntity.ok().body(expenseResponseDTO);
     }
+
+    //API getGroupUnsettledExpenses
+    @GetMapping("/group-unsettled/{groupId}")
+    ResponseEntity<List<ExpenseResponseDTO>> getGroupUnsettledExpenses(@PathVariable("groupId") Long groupId){
+        List<ExpenseResponseDTO> list=groupExpenseService.getUnsettledExpenses(groupId);
+        return ResponseEntity.ok().body(list);
+    }
+
+    //API getGroupSettledExpenses
+    @GetMapping("/group-settled/{groupId}")
+    ResponseEntity<List<ExpenseResponseDTO>> getGroupSettledExpenses(@PathVariable("groupId") Long groupId){
+        List<ExpenseResponseDTO> list=groupExpenseService.getSettledExpenses(groupId);
+        return ResponseEntity.ok().body(list);
+    }
+
 }

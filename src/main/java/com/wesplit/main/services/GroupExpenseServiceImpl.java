@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -132,6 +131,18 @@ public class GroupExpenseServiceImpl implements GroupExpenseService{
         List<Expense> expenses= expenseRepository.findByGroupId(groupId);
         expenses.stream().forEach((expense)->expense.setSettled(Boolean.TRUE));
         expenseRepository.saveAll(expenses);
+    }
+
+    @Override
+    public List<ExpenseResponseDTO> getUnsettledExpenses(Long groupId) {
+        List<Expense> expenseList=expenseRepository.findByGroupIdAndSettled(groupId,false);
+        return expenseList.stream().map(expenseService::expenseToExpenseResponseDTO).toList();
+    }
+
+    @Override
+    public List<ExpenseResponseDTO> getSettledExpenses(Long groupId) {
+        List<Expense> expenseList=expenseRepository.findByGroupIdAndSettled(groupId,true);
+        return expenseList.stream().map(expenseService::expenseToExpenseResponseDTO).toList();
     }
 
     @Override

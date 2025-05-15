@@ -10,4 +10,6 @@ import java.util.List;
 public interface ExpenseRepository extends JpaRepository<Expense,Long> {
 
     List<Expense> findByGroupId(Long groupId);
+
+    List<Expense> findByGroupIdAndSettled(Long groupId, Boolean settled);
 }

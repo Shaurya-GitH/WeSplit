@@ -208,6 +208,7 @@ public class ExpenseServiceImpl implements ExpenseService{
             expenseRepository.save(expense);
             //invalidating cache
             redisTemplate.delete(user1.getEmail()+"_"+user2.getEmail()+"_s_expenses");
+            redisTemplate.delete(user1.getEmail()+"_"+user2.getEmail()+"_u_expenses");
             return this.expenseToExpenseResponseDTO(expense);
         } catch (Exception e) {
             log.error(e.getMessage());

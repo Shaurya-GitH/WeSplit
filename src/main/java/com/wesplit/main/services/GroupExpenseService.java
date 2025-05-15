@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -16,4 +17,6 @@ public interface GroupExpenseService {
     Expense groupExpenseDTOtoExpense(GroupExpenseDTO groupExpenseDTO);
     HashMap<User, BigDecimal> createDebtTable(Long groupId);
     void settleGroupExpenses(Long groupId);
+    List<ExpenseResponseDTO> getUnsettledExpenses(Long groupId);
+    List<ExpenseResponseDTO> getSettledExpenses(Long groupId);
 }
