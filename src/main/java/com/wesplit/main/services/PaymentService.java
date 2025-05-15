@@ -9,9 +9,11 @@ import java.util.List;
 
 @Service
 public interface PaymentService {
-    void createPayment(PaymentDTO paymentDTO,String email1,String email2);
+    void createPayment(PaymentDTO paymentDTO);
     Payment paymentDTOToPayment(PaymentDTO paymentDTO);
     PaymentDTO paymentToPaymentDTO(Payment payment);
     List<PaymentResponseDTO> getPayments(String email1, String email2);
     PaymentResponseDTO paymentToPaymentResponseDTO(Payment payment);
+    void createGroupPayment(PaymentDTO paymentDTO);
+    void paymentCheck(PaymentDTO paymentDTO);
 }

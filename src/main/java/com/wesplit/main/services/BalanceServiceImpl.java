@@ -268,7 +268,7 @@ public class BalanceServiceImpl implements BalanceService {
 
     @Transactional
     @Override
-    public Boolean updateGroupBalance(HashMap<User, BigDecimal> groupDebtTable, HashMap<User, BigDecimal> debt,String currency,Long groupId) {
+    public Boolean updateGroupExpenseBalance(HashMap<User, BigDecimal> groupDebtTable, HashMap<User, BigDecimal> debt,String currency,Long groupId) {
         Set<User> keyset= debt.keySet();
         //creating net debt table
         for(User user:keyset){
@@ -368,9 +368,16 @@ public class BalanceServiceImpl implements BalanceService {
     }
 
     @Override
-    public List<BalanceDTO> getGroupBalance(User user, Long groupId) {
+    public List<BalanceDTO> getGroupBalance(User user, Long groupId,String currency) {
         List<Balance> list= balanceRepository.findByGroupIdAndUser1OrUser2AndGroupId(groupId,user,user,groupId);
-        return list.stream().map(this::balanceToBalanceDTO).toList();
+        List<BalanceDTO> balanceDTOs= list.stream().map(this::balanceToBalanceDTO).toList();
+        return balanceDTOs.stream().map((balanceDTO)->currencyService.displayBalance(balanceDTO,currency)).toList();
+    }
+
+    @Override
+    public Boolean updateGroupPaymentBalance() {
+        //tomorrow
+        return null;
     }
 
 }

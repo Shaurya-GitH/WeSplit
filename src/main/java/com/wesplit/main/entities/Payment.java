@@ -23,6 +23,8 @@ public class Payment {
     private BigDecimal amountPaid;
     @Column(nullable = false)
     private String currency;
+    @Column(nullable = true)
+    private Long groupId;
 
     @ManyToOne
     @JoinColumn(name = "paid_by", referencedColumnName = "userId",nullable = false)

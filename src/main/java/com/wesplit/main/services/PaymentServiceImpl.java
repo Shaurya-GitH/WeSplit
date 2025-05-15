@@ -26,9 +26,9 @@ public class PaymentServiceImpl implements PaymentService{
     private final BalanceService balanceService;
     private final ExpenseService expenseService;
     private final RedisTemplate<Object, Object> redisTemplate;
-    PaymentRepository paymentRepository;
-    UserService userService;
-    ModelMapper modelMapper;
+    private final PaymentRepository paymentRepository;
+    private final UserService userService;
+    private final ModelMapper modelMapper;
     PaymentServiceImpl(PaymentRepository paymentRepository, UserService userService, ModelMapper modelMapper, BalanceService balanceService, ExpenseService expenseService, RedisTemplate<Object, Object> redisTemplate){
         this.paymentRepository=paymentRepository;
         this.userService=userService;
@@ -39,43 +39,19 @@ public class PaymentServiceImpl implements PaymentService{
     }
     @Transactional
     @Override
-    public void createPayment(PaymentDTO paymentDTO, String email1, String email2) {
-        //check if user2 is user1
-        if(email1.equals(email2)){
-            throw new InvalidInputException("user 2 as","yourself");
-        }
-
-        //Api throttling
-        String value=(String) redisTemplate.opsForValue().get(email1+"_createPayment");
-        if(value!=null){
-            Integer integer=Integer.valueOf(value);
-            if(integer>9){
-                throw new TooManyRequestsException(10,"createPayment","60 seconds");
-            }
-            else{
-                redisTemplate.opsForValue().increment(email1+"_createPayment");
-            }
-        }
-        else{
-            redisTemplate.opsForValue().increment(email1+"_createPayment");
-            redisTemplate.expire(email1+"_createPayment",60L, TimeUnit.SECONDS);
-        }
-
-
-        //checking if value is negative
-        if(paymentDTO.getAmountPaid().compareTo(BigDecimal.ZERO)<0){
-            throw new InvalidInputException("Amount less than","0");
-        }
-
+    public void createPayment(PaymentDTO paymentDTO) {
+        String email1=paymentDTO.getEmail1();
+        String email2=paymentDTO.getEmail2();
+        this.paymentCheck(paymentDTO);
         //method logic
         User user1= userService.getUser(email1);
         User user2= userService.getUser(email2);
         Payment payment= this.paymentDTOToPayment(paymentDTO);
+        //saving payment object
+        payment.setPaidBy(user1);
+        payment.setPaidTo(user2);
+        payment.setCreatedAt(LocalDate.now());
         try{
-            //saving payment object
-            payment.setPaidBy(user1);
-            payment.setPaidTo(user2);
-            payment.setCreatedAt(LocalDate.now());
             paymentRepository.save(payment);
             //updating balance
             Boolean settled= balanceService.updatePaymentBalance(user1,user2,paymentDTO.getAmountPaid(),paymentDTO.getCurrency());
@@ -102,13 +78,65 @@ public class PaymentServiceImpl implements PaymentService{
     public List<PaymentResponseDTO> getPayments(String email1, String email2) {
         User user1= userService.getUser(email1);
         User user2= userService.getUser(email2);
-        List<Payment> payments = paymentRepository.findByPaidByAndPaidToOrPaidByAndPaidTo(user1,user2,user2,user1);
-        return payments.stream().map((payment -> this.paymentToPaymentResponseDTO(payment))).toList();
+        List<Payment> payments = paymentRepository.findByPaidByAndPaidToAndGroupIdOrPaidByAndPaidToAndGroupId(user1,user2,null,user2,user1,null);
+        return payments.stream().map((this::paymentToPaymentResponseDTO)).toList();
     }
 
     @Override
     public PaymentResponseDTO paymentToPaymentResponseDTO(Payment payment) {
         return modelMapper.map(payment,PaymentResponseDTO.class);
+    }
+
+    @Override
+    public void createGroupPayment(PaymentDTO paymentDTO) {
+        String email1=paymentDTO.getEmail1();
+        String email2=paymentDTO.getEmail2();
+        this.paymentCheck(paymentDTO);
+        //method logic
+        User user1= userService.getUser(email1);
+        User user2= userService.getUser(email2);
+        Payment payment= this.paymentDTOToPayment(paymentDTO);
+        //saving payment object
+        payment.setPaidBy(user1);
+        payment.setPaidTo(user2);
+        payment.setCreatedAt(LocalDate.now());
+        try{
+            paymentRepository.save(payment);
+            balanceService.updateGroupPaymentBalance();
+        }
+        catch (Exception e){
+            log.error(e.getMessage());
+            throw new TransactionFailedException("failed to create group payment");
+        }
+    }
+
+    @Override
+    public void paymentCheck(PaymentDTO paymentDTO) {
+        String email1=paymentDTO.getEmail1();
+        String email2=paymentDTO.getEmail2();
+        //check if user2 is user1
+        if(email1.equals(email2)){
+            throw new InvalidInputException("user 2 as","yourself");
+        }
+        //checking if value is negative
+        if(paymentDTO.getAmountPaid().compareTo(BigDecimal.ZERO)<0){
+            throw new InvalidInputException("Amount less than","0");
+        }
+        //Api throttling
+        String value=(String) redisTemplate.opsForValue().get(email1+"_createPayment");
+        if(value!=null){
+            int integer= Integer.parseInt(value);
+            if(integer>9){
+                throw new TooManyRequestsException(10,"createPayment","60 seconds");
+            }
+            else{
+                redisTemplate.opsForValue().increment(email1+"_createPayment");
+            }
+        }
+        else{
+            redisTemplate.opsForValue().increment(email1+"_createPayment");
+            redisTemplate.expire(email1+"_createPayment",60L, TimeUnit.SECONDS);
+        }
     }
 
 }

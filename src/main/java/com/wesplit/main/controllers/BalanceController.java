@@ -35,10 +35,10 @@ public class BalanceController {
 
     //API getGroupBalance
     @GetMapping("group/{groupId}")
-    ResponseEntity<List<BalanceDTO>> getGroupBalance(@PathVariable("groupId") Long groupId){
+    ResponseEntity<List<BalanceDTO>> getGroupBalance(@PathVariable("groupId") Long groupId,@CookieValue(value = "currency",defaultValue = "INR") String currency){
         Authentication authentication=SecurityContextHolder.getContext().getAuthentication();
         User user=userService.getUser(authentication.getName());
-        List<BalanceDTO> list= balanceService.getGroupBalance(user,groupId);
+        List<BalanceDTO> list= balanceService.getGroupBalance(user,groupId,currency);
         return ResponseEntity.ok().body(list);
     }
 }

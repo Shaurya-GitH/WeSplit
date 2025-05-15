@@ -77,7 +77,7 @@ public class GroupExpenseServiceImpl implements GroupExpenseService{
         expense.setCreatedAt(LocalDate.now());
 //        expense.setExpenseType(ExpenseType.GROUP);
         HashMap<User,BigDecimal> groupDebtTable= this.createDebtTable(groupExpenseDTO.getGroupId());
-        Boolean settled= balanceService.updateGroupBalance(groupDebtTable,debt,groupExpenseDTO.getCurrency(),groupExpenseDTO.getGroupId());
+        Boolean settled= balanceService.updateGroupExpenseBalance(groupDebtTable,debt,groupExpenseDTO.getCurrency(),groupExpenseDTO.getGroupId());
         if (settled){
             expense.setSettled(Boolean.TRUE);
             this.settleGroupExpenses(groupExpenseDTO.getGroupId());

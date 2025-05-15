@@ -19,10 +19,9 @@ public class PaymentController {
         this.paymentService=paymentService;
     }
     //API createPayment
-    @PostMapping("/create/{user2Email}")
-    ResponseEntity<?> createPayment(@Valid @RequestBody PaymentDTO paymentDTO, @PathVariable("user2Email") String user2Email){
-        Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
-        paymentService.createPayment(paymentDTO, authentication.getName(),user2Email);
+    @PostMapping("/create")
+    ResponseEntity<?> createPayment(@Valid @RequestBody PaymentDTO paymentDTO){
+        paymentService.createPayment(paymentDTO);
         return ResponseEntity.ok().build();
     }
 
@@ -32,5 +31,12 @@ public class PaymentController {
         Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
         List<PaymentResponseDTO> list= paymentService.getPayments(authentication.getName(),user2Email);
         return ResponseEntity.ok().body(list);
+    }
+
+    //API createGroupPayment
+    @PostMapping("/createGroup")
+    ResponseEntity<?> createGroupPayment(@Valid @RequestBody PaymentDTO paymentDTO){
+        paymentService.createGroupPayment(paymentDTO);
+        return ResponseEntity.ok().build();
     }
 }

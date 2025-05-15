@@ -19,4 +19,9 @@ public class PaymentDTO {
     private BigDecimal amountPaid;
     @NotNull
     private String currency;
+    private Long groupId;
+    @NotNull
+    private String email1;
+    @NotNull
+    private String email2;
 }
