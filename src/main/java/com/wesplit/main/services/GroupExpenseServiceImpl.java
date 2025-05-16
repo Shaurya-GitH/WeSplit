@@ -10,6 +10,7 @@ import com.wesplit.main.payloads.ExpenseResponseDTO;
 import com.wesplit.main.payloads.GroupExpenseDTO;
 import com.wesplit.main.repositories.BalanceRepository;
 import com.wesplit.main.repositories.ExpenseRepository;
+import com.wesplit.main.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,13 +27,15 @@ public class GroupExpenseServiceImpl implements GroupExpenseService{
     private final BalanceRepository balanceRepository;
     private final BalanceService balanceService;
     private final ExpenseRepository expenseRepository;
+    private final RedisUtil redisUtil;
 
-    public GroupExpenseServiceImpl(UserService userService,ExpenseService expenseService, BalanceRepository balanceRepository, BalanceService balanceService, ExpenseRepository expenseRepository) {
+    public GroupExpenseServiceImpl(UserService userService, ExpenseService expenseService, BalanceRepository balanceRepository, BalanceService balanceService, ExpenseRepository expenseRepository, RedisUtil redisUtil) {
         this.userService = userService;
         this.expenseService = expenseService;
         this.balanceRepository = balanceRepository;
         this.balanceService = balanceService;
         this.expenseRepository = expenseRepository;
+        this.redisUtil = redisUtil;
     }
 
     @Transactional
@@ -135,14 +138,24 @@ public class GroupExpenseServiceImpl implements GroupExpenseService{
 
     @Override
     public List<ExpenseResponseDTO> getUnsettledExpenses(Long groupId) {
-        List<Expense> expenseList=expenseRepository.findByGroupIdAndSettled(groupId,false);
-        return expenseList.stream().map(expenseService::expenseToExpenseResponseDTO).toList();
+        List<ExpenseResponseDTO> expenseResponseDTOs= redisUtil.getListValue(groupId+"u", ExpenseResponseDTO.class);
+        if(expenseResponseDTOs==null){
+            List<Expense> expenseList=expenseRepository.findByGroupIdAndSettled(groupId,false);
+            expenseResponseDTOs= expenseList.stream().map(expenseService::expenseToExpenseResponseDTO).toList();
+            redisUtil.setValue(groupId+"u",expenseResponseDTOs,1000L);
+        }
+        return expenseResponseDTOs;
     }
 
     @Override
     public List<ExpenseResponseDTO> getSettledExpenses(Long groupId) {
-        List<Expense> expenseList=expenseRepository.findByGroupIdAndSettled(groupId,true);
-        return expenseList.stream().map(expenseService::expenseToExpenseResponseDTO).toList();
+        List<ExpenseResponseDTO> expenseResponseDTOs= redisUtil.getListValue(groupId+"s", ExpenseResponseDTO.class);
+        if(expenseResponseDTOs==null){
+            List<Expense> expenseList=expenseRepository.findByGroupIdAndSettled(groupId,true);
+            expenseResponseDTOs= expenseList.stream().map(expenseService::expenseToExpenseResponseDTO).toList();
+            redisUtil.setValue(groupId+"s",expenseResponseDTOs,1000L);
+        }
+        return expenseResponseDTOs;
     }
 
     @Override
