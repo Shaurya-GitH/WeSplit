@@ -58,7 +58,6 @@ public class CurrencyServiceImpl implements CurrencyService{
     public BalanceDTO displayBalance(BalanceDTO balance, String to) {
         //caching for 1 day
         BigDecimal multiplier=redisUtil.getValue(to,BigDecimal.class);
-        System.out.println(multiplier);
         if(multiplier==null){
             String finalAPI= currencyAPI.replace("FROM","INR").replace("TO",to);
             ResponseEntity<CurrencyResponse> response= restTemplate.exchange(finalAPI,HttpMethod.GET,null, CurrencyResponse.class);

@@ -411,7 +411,6 @@ public class BalanceServiceImpl implements BalanceService {
                 break;
             }
         }
-        log.info(String.valueOf(settled));
         return settled;
     }
 
