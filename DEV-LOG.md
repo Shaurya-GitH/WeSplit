@@ -79,12 +79,40 @@ A development log to track daily progress, ideas, bugs, and reflections while bu
 - ✅ Designed all the GroupService endpoints
 - ✅ used nmap,ping and mtr commands to troubleshoot external API not responding
 
+## 🗓️ 2025-05-14
+
+- ✅ Added addGroupMember API
+- ✅ Added cache invalidation on adding expense or friend
+- ✅ Refactored Expense,Payment and Balance entity to include groupId
+- ✅ Added default cookie value for getBalance API and added comments for currency service
+
+## 🗓️ 2025-05-15
+
+- ✅ Added createGroupExpense API
+- ✅ Used hashmaps,2-D Arrays and priorityQueues for the cash flow minimization algorithm
+- ✅ Greedy approach to minimizing cash flow
+- ✅ Refactored solo balances and expense methods to include groups
+- ✅ Added a payload UserDebt for the group algorithm
+- ✅ Added updateGroupBalance method
+- ✅ Added @EqualsAndHashCode(exclude="") to tackle stackOverflowError due to bidirectional mapping between User and FriendList
+- ✅ Added settlement logic for group expenses
+- ✅ Added getGroups API
+- ✅ Added getGroupUnsettledExpenses API and getGroupSettledExpenses API
+- ✅ Integrated expenseSplits into expense GET APIs and removed GET getExpenseSplits API
+
+## 🗓️ 2025-05-16
+
+- ✅ Added getGroupBalance API
+- ✅ Added caching using redis for currency service.Added currency feature for group balances
+- ✅ Added a common id generator for payment and expense entity
+- ✅ Added createGroupPayment API
+- ✅ removed .equals() with BigDecimal to .compareTo() 
+
 ## Future plan for the project
 
 - I will be starting work on the frontend using ReactJS on the weekdays
 - I will work on the backend in the weekends
 
-### Backend work to be done: 
-- Adding group service
+### Backend work to be done:
 - Start the decoupling by separating balance and group service using Event driven architecture through Apache kafka
 
