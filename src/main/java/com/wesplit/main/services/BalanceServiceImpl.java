@@ -2,6 +2,7 @@ package com.wesplit.main.services;
 
 import com.wesplit.main.entities.Balance;
 import com.wesplit.main.entities.User;
+import com.wesplit.main.exceptions.InvalidInputException;
 import com.wesplit.main.exceptions.TransactionFailedException;
 import com.wesplit.main.payloads.BalanceDTO;
 import com.wesplit.main.payloads.UserDebt;
@@ -9,6 +10,7 @@ import com.wesplit.main.repositories.BalanceRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -210,7 +212,7 @@ public class BalanceServiceImpl implements BalanceService {
         if(balance.getUser1().getUserId().equals(user1.getUserId())) {
             //logic to update balance
             BigDecimal oneOweTwo= balance.getOneOweTwo();
-            if(oneOweTwo.equals(BigDecimal.ZERO)){
+            if(oneOweTwo.compareTo(BigDecimal.ZERO)==0){
                 balance.setTwoOweOne(balance.getTwoOweOne().add(paid));
             }
             else{
@@ -228,7 +230,7 @@ public class BalanceServiceImpl implements BalanceService {
         else{
             //logic to update balance
             BigDecimal twoOweOne= balance.getTwoOweOne();
-            if(twoOweOne.equals(BigDecimal.ZERO)){
+            if(twoOweOne.compareTo(BigDecimal.ZERO)==0){
                 balance.setOneOweTwo(balance.getOneOweTwo().add(paid));
             }
             else{
@@ -375,9 +377,42 @@ public class BalanceServiceImpl implements BalanceService {
     }
 
     @Override
-    public Boolean updateGroupPaymentBalance() {
-        //tomorrow
-        return null;
+    public void updateGroupPaymentBalance(User user1,User user2,BigDecimal amountPaid,Long groupId) {
+        //retrieve balance
+        Balance balance= balanceRepository.findByUser1AndUser2Group(user1,user2,groupId).orElseGet(()->balanceRepository.findByUser1AndUser2Group(user2,user1,groupId).get());
+        if(balance.getUser1().equals(user1)){
+            if(balance.getOneOweTwo().compareTo(amountPaid)<0){
+                throw new InvalidInputException("AmountPaid","more than owed");
+            }
+            BigDecimal result=balance.getOneOweTwo().subtract(amountPaid);
+            balance.setOneOweTwo(result);
+        }
+        else{
+            if(balance.getTwoOweOne().compareTo(amountPaid)<0){
+                throw new InvalidInputException("AmountPaid","more than owed");
+            }
+            BigDecimal result=balance.getTwoOweOne().subtract(amountPaid);
+            balance.setTwoOweOne(result);
+        }
+        balanceRepository.save(balance);
+    }
+
+    @Override
+    public Boolean groupBalanceSettledCheck(Long groupId) {
+        boolean settled=Boolean.TRUE;
+        List<Balance> balances= balanceRepository.findByGroupId(groupId);
+        for(Balance groupBalance:balances){
+            if(groupBalance.getOneOweTwo().compareTo(BigDecimal.ZERO)!=0){
+                settled=Boolean.FALSE;
+                break;
+            }
+            if(groupBalance.getTwoOweOne().compareTo(BigDecimal.ZERO)!=0){
+                settled=Boolean.FALSE;
+                break;
+            }
+        }
+        log.info(String.valueOf(settled));
+        return settled;
     }
 
 }

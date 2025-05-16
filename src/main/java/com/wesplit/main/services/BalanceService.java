@@ -18,5 +18,6 @@ public interface BalanceService {
     BalanceDTO balanceToBalanceDTO(Balance balance);
     Boolean updateGroupExpenseBalance(HashMap<User,BigDecimal> groupDebtTable,HashMap<User,BigDecimal> debt,String currency,Long groupId);
     List<BalanceDTO> getGroupBalance(User user,Long groupId,String currency);
-    Boolean updateGroupPaymentBalance();
+    void updateGroupPaymentBalance(User user1,User user2,BigDecimal amountPaid,Long groupId);
+    Boolean groupBalanceSettledCheck(Long groupId);
 }

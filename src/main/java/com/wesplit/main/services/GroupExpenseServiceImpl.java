@@ -46,7 +46,7 @@ public class GroupExpenseServiceImpl implements GroupExpenseService{
         for(String key:keyset){
           totalpaid= totalpaid.add(payments.get(key));
         }
-        if(!amount.equals(totalpaid)){
+        if(amount.compareTo(totalpaid)!=0){
             throw new InvalidInputException("payments","not equal to Amount");
         }
         //creating expense splits

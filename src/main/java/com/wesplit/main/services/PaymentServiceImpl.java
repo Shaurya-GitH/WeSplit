@@ -29,13 +29,16 @@ public class PaymentServiceImpl implements PaymentService{
     private final PaymentRepository paymentRepository;
     private final UserService userService;
     private final ModelMapper modelMapper;
-    PaymentServiceImpl(PaymentRepository paymentRepository, UserService userService, ModelMapper modelMapper, BalanceService balanceService, ExpenseService expenseService, RedisTemplate<Object, Object> redisTemplate){
+    private final GroupExpenseService groupExpenseService;
+
+    PaymentServiceImpl(PaymentRepository paymentRepository, UserService userService, ModelMapper modelMapper, BalanceService balanceService, ExpenseService expenseService, RedisTemplate<Object, Object> redisTemplate, GroupExpenseService groupExpenseService){
         this.paymentRepository=paymentRepository;
         this.userService=userService;
         this.modelMapper=modelMapper;
         this.balanceService = balanceService;
         this.expenseService = expenseService;
         this.redisTemplate = redisTemplate;
+        this.groupExpenseService = groupExpenseService;
     }
     @Transactional
     @Override
@@ -50,7 +53,6 @@ public class PaymentServiceImpl implements PaymentService{
         //saving payment object
         payment.setPaidBy(user1);
         payment.setPaidTo(user2);
-        payment.setCreatedAt(LocalDate.now());
         try{
             paymentRepository.save(payment);
             //updating balance
@@ -66,7 +68,12 @@ public class PaymentServiceImpl implements PaymentService{
 
     @Override
     public Payment paymentDTOToPayment(PaymentDTO paymentDTO) {
-        return modelMapper.map(paymentDTO,Payment.class);
+        return Payment.builder()
+                .amountPaid(paymentDTO.getAmountPaid())
+                .currency(paymentDTO.getCurrency())
+                .groupId(paymentDTO.getGroupId())
+                .createdAt(LocalDate.now())
+                .build();
     }
 
     @Override
@@ -87,6 +94,7 @@ public class PaymentServiceImpl implements PaymentService{
         return modelMapper.map(payment,PaymentResponseDTO.class);
     }
 
+    @Transactional
     @Override
     public void createGroupPayment(PaymentDTO paymentDTO) {
         String email1=paymentDTO.getEmail1();
@@ -99,10 +107,9 @@ public class PaymentServiceImpl implements PaymentService{
         //saving payment object
         payment.setPaidBy(user1);
         payment.setPaidTo(user2);
-        payment.setCreatedAt(LocalDate.now());
         try{
             paymentRepository.save(payment);
-            balanceService.updateGroupPaymentBalance();
+            balanceService.updateGroupPaymentBalance(user1,user2,paymentDTO.getAmountPaid(),paymentDTO.getGroupId());
         }
         catch (Exception e){
             log.error(e.getMessage());

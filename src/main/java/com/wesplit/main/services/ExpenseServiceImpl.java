@@ -85,7 +85,7 @@ public class ExpenseServiceImpl implements ExpenseService{
         ExpenseSplit expenseSplit2;
         Boolean settled;
         BigDecimal amount=expense.getAmount();
-        if(amount.equals(BigDecimal.ZERO))throw new InvalidInputException("amount","less than 0");
+        if(amount.compareTo(BigDecimal.ZERO)==0)throw new InvalidInputException("amount","less than 0");
         BigDecimal half=amount.divide(BigDecimal.valueOf(2),2,RoundingMode.HALF_UP);
         //dividing the logic based on expense types
         if(expenseType.equals(ExpenseType.SPLIT_EQUALLY_PAIDBY_USER1)){
