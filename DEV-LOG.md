@@ -106,7 +106,9 @@ A development log to track daily progress, ideas, bugs, and reflections while bu
 - ✅ Added caching using redis for currency service.Added currency feature for group balances
 - ✅ Added a common id generator for payment and expense entity
 - ✅ Added createGroupPayment API
-- ✅ removed .equals() with BigDecimal to .compareTo() 
+- ✅ Removed .equals() with BigDecimal to .compareTo() 
+- ✅ Added Logout API which uses a blacklist stored in redis cache
+- ✅ Added redis caching for group expenses and cache invalidation on creating a group expense
 
 ## Future plan for the project
 
@@ -115,4 +117,5 @@ A development log to track daily progress, ideas, bugs, and reflections while bu
 
 ### Backend work to be done:
 - Start the decoupling by separating balance and group service using Event driven architecture through Apache kafka
+- Using gRPC for inter-service communication
 
