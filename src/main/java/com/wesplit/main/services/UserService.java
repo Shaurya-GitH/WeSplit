@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface UserService {
-    UserDTO registerUser(UserDTO userDTO);
+    FriendDTO registerUser(UserDTO userDTO);
     FriendDTO addFriend(FriendDTO userDTO, String email);
     User userDtoToUser(UserDTO userDTO);
     UserDTO userToUserDto(User user);

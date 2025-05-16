@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,16 +30,19 @@ public class UserServiceImpl implements UserService {
     final private ModelMapper modelMapper;
     final private BalanceService balanceService;
     final private PasswordEncoder passwordEncoder;
+    private final RedisTemplate<Object, Object> redisTemplate;
+
     @Autowired
-    UserServiceImpl(UserRepository userRepository,ModelMapper modelMapper,BalanceService balanceService,PasswordEncoder passwordEncoder){
+    UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper, BalanceService balanceService, PasswordEncoder passwordEncoder, RedisTemplate<Object, Object> redisTemplate){
         this.userRepository=userRepository;
         this.modelMapper=modelMapper;
         this.balanceService=balanceService;
         this.passwordEncoder=passwordEncoder;
+        this.redisTemplate = redisTemplate;
     }
 
     @Override
-    public UserDTO registerUser(UserDTO userDTO) {
+    public FriendDTO registerUser(UserDTO userDTO) {
 
         try{
             User user=this.userDtoToUser(userDTO);
@@ -56,7 +60,7 @@ public class UserServiceImpl implements UserService {
             list.add("USER");
             user.setRoles(list);
             User newUser= userRepository.save(user);
-            return this.userToUserDto(newUser);
+            return this.userToFriendDTO(newUser);
         }
         //if user is already in the record
         catch (DataIntegrityViolationException e){
@@ -84,7 +88,7 @@ public class UserServiceImpl implements UserService {
                 friendUser.setLastName(user.getLastName());
                 try{
                     User newUser= userRepository.save(friendUser);
-                    return this.userToUserDto(newUser);
+                    return this.userToFriendDTO(newUser);
                 } catch (Exception ex) {
                     log.error(ex.getMessage());
                     throw new TransactionFailedException("Failed to save friend as a user");
@@ -112,7 +116,7 @@ public class UserServiceImpl implements UserService {
             }
             else{
                 //creating a balance record between the friends
-                balanceService.addNewBalance(friendUser.get(),loggedUser);
+                balanceService.addNewBalance(friendUser.get(),loggedUser,null);
                 friendList.add(friendUser.get());
                 FriendList newList= loggedUser.getFriendList();
                 newList.setFriends(friendList);
@@ -130,7 +134,7 @@ public class UserServiceImpl implements UserService {
             try {
                 User newUser = userRepository.save(user);
                 //creating a balance record between the friends
-                balanceService.addNewBalance(loggedUser, newUser);
+                balanceService.addNewBalance(loggedUser, newUser,null);
                 //adding the friend to the friend-list
                 List<User> friendList = loggedUser.getFriendList().getFriends();
                 friendList.add(newUser);
@@ -138,6 +142,8 @@ public class UserServiceImpl implements UserService {
                 newList.setFriends(friendList);
                 loggedUser.setFriendList(newList);
                 userRepository.save(loggedUser);
+                //invalidating cache
+                redisTemplate.delete(email+"_friends");
                 return this.userToFriendDTO(newUser);
             }
             catch (Exception e){

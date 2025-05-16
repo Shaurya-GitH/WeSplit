@@ -30,6 +30,7 @@ public class SecurityConfig {
                             .requestMatchers("/api/payment/**").hasRole("USER")
                             .requestMatchers("/api/balance/**").hasRole("USER")
                             .requestMatchers("/api/user/**").hasRole("USER")
+                            .requestMatchers("/api/groups/**").hasRole("USER")
                             .anyRequest().permitAll();
                 })
                 .sessionManagement((session)->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

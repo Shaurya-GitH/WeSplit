@@ -2,6 +2,7 @@ package com.wesplit.main.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,9 +14,11 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table
+@Builder
 public class Payment {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "money_sequence")
+    @SequenceGenerator(name = "money_sequence",sequenceName ="money_sequence",allocationSize = 1)
     private Long paymentId;
     @Column(nullable = false)
     private LocalDate createdAt;
@@ -23,6 +26,8 @@ public class Payment {
     private BigDecimal amountPaid;
     @Column(nullable = false)
     private String currency;
+    @Column(nullable = true)
+    private Long groupId;
 
     @ManyToOne
     @JoinColumn(name = "paid_by", referencedColumnName = "userId",nullable = false)

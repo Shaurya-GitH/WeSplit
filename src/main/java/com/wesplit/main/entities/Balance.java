@@ -29,4 +29,7 @@ public class Balance {
     @JoinColumn(referencedColumnName = "userId")
     private User user2;
 
+    @Column(nullable = true)
+    private Long groupId;
+
 }

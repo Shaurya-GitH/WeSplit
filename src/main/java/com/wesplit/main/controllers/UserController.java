@@ -3,6 +3,8 @@ package com.wesplit.main.controllers;
 import com.wesplit.main.payloads.FriendDTO;
 import com.wesplit.main.services.FriendListService;
 import com.wesplit.main.services.UserService;
+import com.wesplit.main.utils.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +19,12 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
     private final FriendListService friendListService;
-    UserController(UserService userService, FriendListService friendListService){
+    private final JwtUtil jwtUtil;
+
+    UserController(UserService userService, FriendListService friendListService, JwtUtil jwtUtil){
         this.userService=userService;
         this.friendListService=friendListService;
+        this.jwtUtil = jwtUtil;
     }
 
     //API addFriend
@@ -43,5 +48,12 @@ public class UserController {
        Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
       List<FriendDTO> friends= friendListService.getAllFriends(authentication.getName());
         return ResponseEntity.ok().body(friends);
+    }
+
+    //API logout
+    @GetMapping("/logout")
+    ResponseEntity<?> logout(HttpServletRequest request){
+        jwtUtil.logout(request);
+        return ResponseEntity.ok().build();
     }
 }

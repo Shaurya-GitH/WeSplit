@@ -14,6 +14,8 @@
 
 ###  Group Management
 - Create and manage groups to organize shared expenses among multiple users.
+- Cash flow minimization algorithm
+- Automatically settle expenses through payments or creating expenses
 
 ###  Balance Calculation
 - Real-time tracking of who owes whom and how much.
@@ -39,7 +41,6 @@
 
 -  **Activity Feed** using **Kafka**
 -  **Notification System** for expenses & settlements using websockets
--  **Group Settlement Logic**
 -  **Test Coverage** using JUnit & Mockito
 
 ---

@@ -1,5 +1,6 @@
 package com.wesplit.main.controllers;
 
+import com.wesplit.main.payloads.FriendDTO;
 import com.wesplit.main.payloads.LoginUser;
 import com.wesplit.main.payloads.UserDTO;
 import com.wesplit.main.services.UserService;
@@ -32,8 +33,8 @@ public class    PublicController {
 
     //API registerUser
     @PostMapping("/register")
-    ResponseEntity<UserDTO> registerUser(@Valid @RequestBody UserDTO userDTO){
-        UserDTO newUser= userService.registerUser(userDTO);
+    ResponseEntity<FriendDTO> registerUser(@Valid @RequestBody UserDTO userDTO){
+        FriendDTO newUser= userService.registerUser(userDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
     }
 

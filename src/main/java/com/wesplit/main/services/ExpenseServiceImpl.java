@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -84,7 +85,7 @@ public class ExpenseServiceImpl implements ExpenseService{
         ExpenseSplit expenseSplit2;
         Boolean settled;
         BigDecimal amount=expense.getAmount();
-        if(amount.equals(BigDecimal.ZERO))throw new InvalidInputException("amount","less than 0");
+        if(amount.compareTo(BigDecimal.ZERO)==0)throw new InvalidInputException("amount","less than 0");
         BigDecimal half=amount.divide(BigDecimal.valueOf(2),2,RoundingMode.HALF_UP);
         //dividing the logic based on expense types
         if(expenseType.equals(ExpenseType.SPLIT_EQUALLY_PAIDBY_USER1)){
@@ -196,6 +197,7 @@ public class ExpenseServiceImpl implements ExpenseService{
         newList.add(expenseSplit1);
         newList.add(expenseSplit2);
         expense.setSplitList(newList);
+        expense.setCreatedAt(LocalDate.now());
         if(settled!=null && settled){
             expense.setSettled(settled);
         }
@@ -204,6 +206,9 @@ public class ExpenseServiceImpl implements ExpenseService{
         }
         try{
             expenseRepository.save(expense);
+            //invalidating cache
+            redisTemplate.delete(user1.getEmail()+"_"+user2.getEmail()+"_s_expenses");
+            redisTemplate.delete(user1.getEmail()+"_"+user2.getEmail()+"_u_expenses");
             return this.expenseToExpenseResponseDTO(expense);
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -260,6 +265,8 @@ public class ExpenseServiceImpl implements ExpenseService{
                 expense.setSettled(true);
                 expenseRepository.save(expense);
             });
+            //invalidating cache
+            redisTemplate.delete(user1.getEmail()+"_"+user2.getEmail()+"_s_expenses");
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new TransactionFailedException("failed to settle expenses");
