@@ -12,6 +12,7 @@ import com.wesplit.main.repositories.BalanceRepository;
 import com.wesplit.main.repositories.ExpenseRepository;
 import com.wesplit.main.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,14 +29,16 @@ public class GroupExpenseServiceImpl implements GroupExpenseService{
     private final BalanceService balanceService;
     private final ExpenseRepository expenseRepository;
     private final RedisUtil redisUtil;
+    private final RedisTemplate redisTemplate;
 
-    public GroupExpenseServiceImpl(UserService userService, ExpenseService expenseService, BalanceRepository balanceRepository, BalanceService balanceService, ExpenseRepository expenseRepository, RedisUtil redisUtil) {
+    public GroupExpenseServiceImpl(UserService userService, ExpenseService expenseService, BalanceRepository balanceRepository, BalanceService balanceService, ExpenseRepository expenseRepository, RedisUtil redisUtil, RedisTemplate redisTemplate) {
         this.userService = userService;
         this.expenseService = expenseService;
         this.balanceRepository = balanceRepository;
         this.balanceService = balanceService;
         this.expenseRepository = expenseRepository;
         this.redisUtil = redisUtil;
+        this.redisTemplate = redisTemplate;
     }
 
     @Transactional
@@ -87,6 +90,8 @@ public class GroupExpenseServiceImpl implements GroupExpenseService{
         }
         try{
             expenseRepository.save(expense);
+            redisTemplate.delete(groupExpenseDTO.getGroupId()+"u");
+            redisTemplate.delete(groupExpenseDTO.getGroupId()+"s");
         }
         catch (Exception e){
             log.error(e.getMessage());
