@@ -6,7 +6,9 @@ import lombok.*;
 import java.util.List;
 
 @Entity
-@Table
+@Table(indexes = {
+        @Index(name = "emailIndex", columnList = "email")
+})
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
