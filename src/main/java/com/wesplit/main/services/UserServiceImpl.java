@@ -122,6 +122,8 @@ public class UserServiceImpl implements UserService {
                 newList.setFriends(friendList);
                 loggedUser.setFriendList(newList);
                 userRepository.save(loggedUser);
+                //invalidating cache
+                redisTemplate.delete(email+"_friends");
                 return null;
             }
         }

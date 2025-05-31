@@ -11,6 +11,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PaymentResponseDTO {
+    private Long paymentId;
     private LocalDate createdAt;
     private BigDecimal amountPaid;
     private FriendDTO paidBy;
