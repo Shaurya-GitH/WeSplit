@@ -2,6 +2,8 @@
 
 **WeSplit** is a full-stack expense sharing application inspired by Splitwise. Designed to make managing shared expenses, group balances, and settlements easier, it's ideal for roommates, travel groups, or anyone who splits costs regularly.
 
+-Frontend repository: https://github.com/Shaurya-GitH/WeSplit-Frontend
+
 ---
 
 ## 🔑 Features
