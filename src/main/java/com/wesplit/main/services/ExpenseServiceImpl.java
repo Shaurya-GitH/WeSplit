@@ -267,6 +267,7 @@ public class ExpenseServiceImpl implements ExpenseService{
             });
             //invalidating cache
             redisTemplate.delete(user1.getEmail()+"_"+user2.getEmail()+"_s_expenses");
+            redisTemplate.delete(user1.getEmail()+"_"+user2.getEmail()+"_u_expenses");
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new TransactionFailedException("failed to settle expenses");

@@ -90,6 +90,7 @@ public class GroupExpenseServiceImpl implements GroupExpenseService{
         }
         try{
             expenseRepository.save(expense);
+            //invalidating cache
             redisTemplate.delete(groupExpenseDTO.getGroupId()+"u");
             redisTemplate.delete(groupExpenseDTO.getGroupId()+"s");
         }
@@ -139,6 +140,8 @@ public class GroupExpenseServiceImpl implements GroupExpenseService{
         List<Expense> expenses= expenseRepository.findByGroupId(groupId);
         expenses.stream().forEach((expense)->expense.setSettled(Boolean.TRUE));
         expenseRepository.saveAll(expenses);
+        redisTemplate.delete(groupId+"u");
+        redisTemplate.delete(groupId+"s");
     }
 
     @Override
