@@ -9,7 +9,7 @@ import java.util.List;
 
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment,Long> {
-    List<Payment> findByPaidByAndPaidToOrPaidByAndPaidTo(User paidBy, User paidTo, User paidBy2, User paidTo2);
+    List<Payment> findByPaidByAndPaidToAndGroupIdOrPaidByAndPaidToAndGroupId(User paidBy, User paidTo,Long groupId, User paidBy1, User paidTo1,Long groupId1);
 
     List<Payment> findByGroupId(Long groupId);
 }
