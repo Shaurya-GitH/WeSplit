@@ -85,8 +85,14 @@ public class PaymentServiceImpl implements PaymentService{
     public List<PaymentResponseDTO> getPayments(String email1, String email2) {
         User user1= userService.getUser(email1);
         User user2= userService.getUser(email2);
-        List<Payment> payments = paymentRepository.findByPaidByAndPaidToAndGroupIdOrPaidByAndPaidToAndGroupId(user1,user2,null,user2,user1,null);
+        List<Payment> payments = paymentRepository.findByPaidByAndPaidToOrPaidByAndPaidTo(user1,user2,user2,user1);
         return payments.stream().map((this::paymentToPaymentResponseDTO)).toList();
+    }
+
+    @Override
+    public List<PaymentResponseDTO> getGroupPayments(Long groupId) {
+        List<Payment> payments= paymentRepository.findByGroupId(groupId);
+        return payments.stream().map(this::paymentToPaymentResponseDTO).toList();
     }
 
     @Override

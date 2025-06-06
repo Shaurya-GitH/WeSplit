@@ -13,6 +13,7 @@ public interface PaymentService {
     Payment paymentDTOToPayment(PaymentDTO paymentDTO);
     PaymentDTO paymentToPaymentDTO(Payment payment);
     List<PaymentResponseDTO> getPayments(String email1, String email2);
+    List<PaymentResponseDTO> getGroupPayments(Long groupId);
     PaymentResponseDTO paymentToPaymentResponseDTO(Payment payment);
     void createGroupPayment(PaymentDTO paymentDTO);
     void paymentCheck(PaymentDTO paymentDTO);

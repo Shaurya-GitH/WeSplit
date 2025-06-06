@@ -40,6 +40,13 @@ public class PaymentController {
         return ResponseEntity.ok().body(list);
     }
 
+    //API getGroupPayments
+    @GetMapping("/group/{groupId}")
+    ResponseEntity<List<PaymentResponseDTO>> getAllGroupPayments(@PathVariable("groupId") Long groupId){
+        List<PaymentResponseDTO> list= paymentService.getGroupPayments(groupId);
+        return ResponseEntity.ok().body(list);
+    }
+
     //API createGroupPayment
     @PostMapping("/createGroup")
     ResponseEntity<?> createGroupPayment(@Valid @RequestBody PaymentDTO paymentDTO){
