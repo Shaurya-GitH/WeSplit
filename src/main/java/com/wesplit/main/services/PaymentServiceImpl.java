@@ -59,6 +59,11 @@ public class PaymentServiceImpl implements PaymentService{
             Boolean settled= balanceService.updatePaymentBalance(user1,user2,paymentDTO.getAmountPaid(),paymentDTO.getCurrency());
             if(settled){
                 expenseService.settleExpenses(user1,user2);
+                //invalidating cache
+                redisTemplate.delete(email1+"_"+email2+"_s_expenses");
+                redisTemplate.delete(email1+"_"+email2+"_u_expenses");
+                redisTemplate.delete(email2+"_"+email1+"_s_expenses");
+                redisTemplate.delete(email2+"_"+email1+"_u_expenses");
             }
         } catch (Exception e) {
             log.error(e.getMessage());
