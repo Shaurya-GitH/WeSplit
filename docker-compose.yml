@@ -1,0 +1,37 @@
+services:
+  mysql:
+    image: mysql:8
+    container_name: mysql
+    volumes:
+      - ./my-volume:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: we_split
+      MYSQL_ROOT_PASSWORD: root@123
+
+  wesplit:
+    image: wesplit:v1.0.0
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/we_split
+    depends_on:
+      - mysql
+    deploy:
+      replicas: 3
+
+  frontend:
+    container_name: frontend
+    image: frontend:v1.0.1
+    ports:
+      - 5173:5173
+    depends_on:
+      - wesplit
+      - mysql
+
+  ingress:
+    container_name: ingress
+    image: nginx:alpine
+    ports:
+      - 8080:80
+    depends_on:
+      - wesplit
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
