@@ -18,12 +18,21 @@ spec:
       imagePullSecrets:
         - name: dockerhub-cred
       containers:
-      - image: shauryamdocker/wesplit:v2
-        name: wesplit
-        ports:
-          - containerPort: 8080
-        env:
-         - name: spring.datasource.url
-           value: jdbc:mysql://mysql:3306/wesplit
-         - name: spring.data.redis.host
-           value: redis
+        - image: shauryamdocker/wesplit:v2
+          name: wesplit
+          ports:
+            - containerPort: 8080
+          env:
+            - name: spring.datasource.url
+              value: jdbc:mysql://mysql:3306/wesplit
+            - name: spring.data.redis.host
+              value: redis
+      initContainers:
+        - image: busybox:1.28
+          name: init-mysql
+          command: ['sh','-c',"until nslookup mysql; do echo waiting for mysql;sleep 2; done"] 
+        - image: busybox:1.28
+          name: init-redis
+          command: ['sh','-c',"until nslookup redis; do echo waiting for mysql;sleep 2; done"] 
+
+
