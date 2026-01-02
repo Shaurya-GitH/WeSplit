@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: wesplit
+  name: wesplit
+spec:
+  rules:
+    - http:
+        paths:
+          - path : /api
+            pathType: Prefix
+            backend:
+              service:
+                name: wesplit
+                port:
+                  number: 8080
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: wesplit-frontend
+                port:
+                  number: 5173

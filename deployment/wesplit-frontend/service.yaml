@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: wesplit-frontend
+  name: wesplit-frontend
+spec:
+  ports:
+  - name: "5173"
+    port: 5173
+    protocol: TCP
+    targetPort: 5173
+  selector:
+    app: wesplit-frontend
+  type: ClusterIP

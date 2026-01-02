@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: wesplit
+  name: wesplit
+  namespace: wesplit
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wesplit
+  template:
+    metadata:
+      labels:
+        app: wesplit
+    spec:
+      imagePullSecrets:
+        - name: dockerhub-cred
+      containers:
+      - image: shauryamdocker/wesplit:v2
+        name: wesplit
+        ports:
+          - containerPort: 8080
+        env:
+         - name: spring.datasource.url
+           value: jdbc:mysql://mysql:3306/wesplit
+         - name: spring.data.redis.host
+           value: redis

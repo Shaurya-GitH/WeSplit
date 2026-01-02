@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: wesplit-frontend
+  name: wesplit-frontend
+  namespace: wesplit
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wesplit-frontend
+  template:
+    metadata:
+      labels:
+        app: wesplit-frontend
+    spec:
+      imagePullSecrets:
+        - name: dockerhub-cred
+      containers:
+      - image: shauryamdocker/wesplit-frontend:v2
+        name: wesplit-frontend
+        ports:
+          - containerPort: 5173
+        env:
+          - name: VITE_BACKEND_DN
+            value: localhost
